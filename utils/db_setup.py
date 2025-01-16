@@ -3,6 +3,9 @@ import pandas as pd
 import sqlite3
 import argparse
 import team_stats as ts
+import warnings
+
+warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 
 def init_argparser() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="This is a CLI used to populate the NFL Sim Engine Lite database")
