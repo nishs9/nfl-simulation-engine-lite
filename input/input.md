@@ -1,0 +1,1 @@
+If you want to hydrate the DB using local files, you need to put the play-by-play CSVs in the same folder as this document!
