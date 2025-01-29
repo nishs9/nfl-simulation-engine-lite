@@ -170,7 +170,6 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
-data/*.pkl
 data/*.csv
 input/*.csv
 nfl_stats.db
