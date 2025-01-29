@@ -2,7 +2,7 @@ from constants import pbp_filter_list
 import pandas as pd
 import sqlite3
 import argparse
-import team_stats as ts
+import team_stats_util as tsu
 import warnings
 
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
@@ -105,48 +105,48 @@ def setup_sim_engine_team_stats_table(raw_pbp_df: pd.DataFrame, db_conn: sqlite3
 
         games_played_list.append(curr_team_df["game_id"].unique().size)
 
-        pass_completion_rate_list.append(ts.get_completion_pct(team, curr_team_df))
-        yards_per_completion_list.append(ts.get_yards_per_completion(team, curr_team_df))
+        pass_completion_rate_list.append(tsu.get_completion_pct(team, curr_team_df))
+        yards_per_completion_list.append(tsu.get_yards_per_completion(team, curr_team_df))
 
-        off_air_yards_per_attempt_list.append(ts.get_air_yards_per_attempt(team, curr_team_df))
-        def_air_yards_per_attempt_list.append(ts.get_air_yards_allowed_per_attempt(team, curr_team_df))
+        off_air_yards_per_attempt_list.append(tsu.get_air_yards_per_attempt(team, curr_team_df))
+        def_air_yards_per_attempt_list.append(tsu.get_air_yards_allowed_per_attempt(team, curr_team_df))
 
-        off_yac_per_completion_list.append(ts.get_yards_after_catch_per_completion(team, curr_team_df))
-        def_yac_per_completion_list.append(ts.get_yards_after_catch_allowed_per_completion(team, curr_team_df))
+        off_yac_per_completion_list.append(tsu.get_yards_after_catch_per_completion(team, curr_team_df))
+        def_yac_per_completion_list.append(tsu.get_yards_after_catch_allowed_per_completion(team, curr_team_df))
 
-        rush_yards_per_carry_list.append(ts.get_rush_yards_per_carry(team, curr_team_df))
-        turnover_rate_list.append(ts.get_turnover_rate(team, curr_team_df))
-        forced_turnover_rate_list.append(ts.get_forced_turnover_rate(team, curr_team_df))
+        rush_yards_per_carry_list.append(tsu.get_rush_yards_per_carry(team, curr_team_df))
+        turnover_rate_list.append(tsu.get_turnover_rate(team, curr_team_df))
+        forced_turnover_rate_list.append(tsu.get_forced_turnover_rate(team, curr_team_df))
 
-        mean, variance = ts.get_off_pass_yards_per_play_distribution_params(team, curr_team_df)
+        mean, variance = tsu.get_off_pass_yards_per_play_distribution_params(team, curr_team_df)
         off_pass_yards_per_play_mean_list.append(mean)
         off_pass_yards_per_play_variance_list.append(variance)
 
-        mean, variance = ts.get_def_pass_yards_per_play_distribution_params(team, curr_team_df)
+        mean, variance = tsu.get_def_pass_yards_per_play_distribution_params(team, curr_team_df)
         def_pass_yards_per_play_mean_list.append(mean)
         def_pass_yards_per_play_variance_list.append(variance)
 
-        mean, variance = ts.get_off_rush_yards_per_play_distribution_params(team, curr_team_df)
+        mean, variance = tsu.get_off_rush_yards_per_play_distribution_params(team, curr_team_df)
         off_rush_yards_per_play_mean_list.append(mean)
         off_rush_yards_per_play_variance_list.append(variance)
 
-        mean, variance = ts.get_def_rush_yards_per_play_distribution_params(team, curr_team_df)
+        mean, variance = tsu.get_def_rush_yards_per_play_distribution_params(team, curr_team_df)
         def_rush_yards_per_play_mean_list.append(mean)
         def_rush_yards_per_play_variance_list.append(variance)
 
-        run_rate, pass_rate = ts.get_run_and_pass_rates(team, curr_team_df)
+        run_rate, pass_rate = tsu.get_run_and_pass_rates(team, curr_team_df)
         run_rate_list.append(run_rate)
         pass_rate_list.append(pass_rate)
 
-        sacks_allowed_rate, sack_yards_allowed, sacks_made_rate, sack_yards_inflicted = ts.get_sack_rates(team, curr_team_df)
+        sacks_allowed_rate, sack_yards_allowed, sacks_made_rate, sack_yards_inflicted = tsu.get_sack_rates(team, curr_team_df)
         sacks_allowed_rate_list.append(sacks_allowed_rate)
         sack_yards_allowed_list.append(sack_yards_allowed)
         sacks_made_rate_list.append(sacks_made_rate)
         sack_yards_inflicted_list.append(sack_yards_inflicted)
-        fg_success_rate_list.append(ts.get_field_goal_success_rate(team, curr_team_df))
-        pass_completion_rate_allowed_list.append(ts.get_completion_pct_allowed(team, curr_team_df))
-        yards_allowed_per_completion_list.append(ts.get_yards_allowed_per_completion(team, curr_team_df))
-        rush_yards_allowed_per_carry_list.append(ts.get_rush_yards_allowed_per_carry(team, curr_team_df))
+        fg_success_rate_list.append(tsu.get_field_goal_success_rate(team, curr_team_df))
+        pass_completion_rate_allowed_list.append(tsu.get_completion_pct_allowed(team, curr_team_df))
+        yards_allowed_per_completion_list.append(tsu.get_yards_allowed_per_completion(team, curr_team_df))
+        rush_yards_allowed_per_carry_list.append(tsu.get_rush_yards_allowed_per_carry(team, curr_team_df))
 
     team_stats_dict["games_played"] = games_played_list
     team_stats_dict["pass_completion_rate"] = pass_completion_rate_list
