@@ -1,5 +1,5 @@
-from Team import Team
-from TeamStats import TeamStats
+from team.Team import Team
+from team.TeamStats import TeamStats
 from sqlite3 import Connection
 import pandas as pd
 

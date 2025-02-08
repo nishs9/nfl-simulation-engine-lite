@@ -1,5 +1,5 @@
 from scipy.stats import lognorm
-import TeamStats
+import team.TeamStats as TeamStats
 import numpy as np
 
 class Team:

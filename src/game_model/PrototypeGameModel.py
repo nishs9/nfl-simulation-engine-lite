@@ -1,4 +1,4 @@
-from GameModel import GameModel
+from game_model.GameModel import GameModel
 import random
 
 class PrototypeGameModel(GameModel):
