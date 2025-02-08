@@ -1,4 +1,5 @@
-import TeamFactory
+from team import TeamFactory, Team
+from game_models import PrototypeGameModel
 import random
 import pandas as pd
 import math

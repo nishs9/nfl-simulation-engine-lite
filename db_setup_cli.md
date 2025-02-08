@@ -1,6 +1,6 @@
 ## NFL Sim Engine Lite DB Setup CLI
 
-The `db_setup.py` script is a CLI that can be used to setup the backing DB that is utilized by the NFL Sim Engine.
+The `db_setup.py` script is a CLI that can be used to setup the backing DB that is utilized by the NFL Sim Engine. You run the script from the `utils` folder. It will generated a file called `nfl_stats.db` in the same directory. Move this file to the `src` folder to complete the setup of the DB.
 
 #### Execution flows:
 1. Full DB Hydration (online) -> Retrieves PBP data from the online data repo and generates the sim engine team stats table
