@@ -32,7 +32,7 @@ class PrototypeGameModel(GameModel):
                 "posteam": posteam.name
             }
         elif game_state["down"] == 4 and game_state["yardline"] <= 45:
-            fg_success_rate = posteam.get_stat("field_goal_success_rate")
+            fg_success_rate = posteam_stats.field_goal_success_rate
             return {
                 "play_type": "field_goal", 
                 "field_goal_made": random.choices([True, False], [fg_success_rate, 1 - fg_success_rate])[0],
