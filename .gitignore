@@ -173,3 +173,4 @@ cython_debug/
 data/*.csv
 input/*.csv
 nfl_stats.db
+simulation_logs/*.csv
