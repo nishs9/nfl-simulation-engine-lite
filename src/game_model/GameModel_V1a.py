@@ -1,37 +1,38 @@
-from game_model.GameModel import AbstractGameModel
-from fourth_down_models.models import v1_fdm
+from game_model.GameModel_V1 import GameModel_V1
+from fourth_down_models.models import v2a_fdm
 import pandas as pd
 import random
 
-class GameModel_V1(AbstractGameModel):
+class GameModel_V1a(GameModel_V1):
     
-    def __init__(self, off_weight=0.65):
-        self.fourth_down_model = v1_fdm
-        self.fourth_down_model_column_mapping = { 0: "run", 1: "pass",
-                                                2: "punt", 3: "field_goal" }
+    def __init__(self, off_weight=0.625):
+        self.fourth_down_model = v2a_fdm
+        self.fourth_down_model_column_mapping = { 0: "goforit", 1: "field_goal", 2: "punt" }
         super().__init__(off_weight)
 
     def get_model_code(self) -> str:
-        return "v1"
-
-    def get_half_seconds_remaining(self, qtr: int, qtr_seconds_remaining: int) -> int:
-        if qtr == 1 or qtr == 3:
-            return qtr_seconds_remaining + 900
-        else:
-            return qtr_seconds_remaining
+        return "v1a"
 
     def handle_4th_down(self, game_state: dict) -> str:
-        posteam = game_state["possession_team"].name
-        defteam = game_state["defense_team"].name
+        posteam = game_state["possession_team"]
+        posteam_stats = posteam.get_stats()
+
+        defteam = game_state["defense_team"]
+        defteam_stats = defteam.get_stats()
+
         fourth_down_data = {
             "game_seconds_remaining": game_state["game_seconds_remaining"],
             "half_seconds_remaining": self.get_half_seconds_remaining(game_state["quarter"], game_state["quarter_seconds_remaining"]),
             "ydstogo": game_state["distance"],
             "yardline_100": game_state["yardline"],
-            "score_differential": game_state["score"][posteam] - game_state["score"][defteam]    
+            "score_differential": game_state["score"][posteam.name] - game_state["score"][posteam.name]    
         }
-        prediction = self.fourth_down_model.predict(pd.DataFrame([fourth_down_data]))
-        return self.fourth_down_model_column_mapping[prediction[0]]
+        prediction_result = self.fourth_down_model.predict(pd.DataFrame([fourth_down_data]))
+        prediction = self.fourth_down_model_column_mapping[prediction_result[0]]
+        if prediction == "goforit":
+            return random.choices(['run', 'pass'], [posteam_stats.run_rate, defteam_stats.pass_rate])[0]
+        else:
+            return prediction
 
     def resolve_play(self, game_state: dict) -> dict:
         posteam = game_state["possession_team"]
@@ -40,7 +41,7 @@ class GameModel_V1(AbstractGameModel):
         defteam = game_state["defense_team"]
         defteam_stats = defteam.get_stats()
 
-        time_elapsed = random.randint(15,40)
+        time_elapsed = random.randint(20,30)
 
         play_type = None
         if (game_state["down"] == 4):
@@ -55,7 +56,7 @@ class GameModel_V1(AbstractGameModel):
             return {
                 "play_type": "punt", 
                 "field_goal_made": None,
-                "yards_gained": 40,
+                "yards_gained": random.randint(40,55),
                 "time_elapsed": time_elapsed, 
                 "quarter": game_state["quarter"],
                 "quarter_seconds_remaining": game_state["quarter_seconds_remaining"],
@@ -86,7 +87,7 @@ class GameModel_V1(AbstractGameModel):
         else:
             off_yards_per_play = posteam.sample_offensive_passing_play()
             def_yards_per_play = defteam.sample_defensive_passing_play()
-        
+
         weighted_yards_per_play = self.get_weighted_average(off_yards_per_play, def_yards_per_play)
 
         if (play_type == "pass"):
@@ -99,7 +100,7 @@ class GameModel_V1(AbstractGameModel):
 
         off_turnover_rate = posteam_stats.turnover_rate
         def_turnover_rate = defteam_stats.forced_turnover_rate
-        weighted_turnover_rate = (0.45) * (self.get_weighted_average(off_turnover_rate, def_turnover_rate))
+        weighted_turnover_rate = (0.40) * (self.get_weighted_average(off_turnover_rate, def_turnover_rate))
         turnover_on_play = random.choices([True, False], [weighted_turnover_rate, 1 - weighted_turnover_rate])[0]
 
         if (not turnover_on_play):

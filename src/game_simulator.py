@@ -1,5 +1,5 @@
+from game_model.GameModelFactory import initialize_new_game_model_instance
 from game_model.PrototypeGameModel import PrototypeGameModel
-from game_model.GameModel_V1 import GameModel_V1
 from game_engine.GameEngine import GameEngine
 from team.Team import Team
 from time import time
@@ -163,7 +163,7 @@ def run_multiple_simulations_with_statistics(home_team_abbrev: str, away_team_ab
 if __name__ == "__main__":
     home_team = "BUF"
     away_team = "PHI"
-    num_simulations = 2500
+    num_simulations = 1000
     ## ADD SIMULATION INVOCATION BELOW ##
     # single_simulation_result = run_single_simulation(home_team, away_team)
     # print(single_simulation_result)
@@ -173,6 +173,6 @@ if __name__ == "__main__":
     # print(f"\nExecution time: {exec_end - exec_start} seconds.\n")
 
     exec_start = time()
-    run_multiple_simulations_with_statistics(home_team, away_team, num_simulations, game_model=GameModel_V1())
+    run_multiple_simulations_with_statistics(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"))
     exec_end = time()
     print(f"\nExecution time: {exec_end - exec_start} seconds.")

@@ -23,8 +23,8 @@ class Team:
             self.off_rushing_distribution = self.init_distribution(self.stats.off_rush_yards_per_play_mean, self.stats.off_rush_yards_per_play_variance)
             self.def_rushing_distribution = self.init_distribution(self.stats.def_rush_yards_per_play_mean, self.stats.def_rush_yards_per_play_variance)
         elif game_model_str == "v1b":
-            self.off_air_yards_distribution = self.init_distribution(self.stats.off_air_yards_per_attempt, self.off_pass_yards_per_play_variance)
-            self.def_air_yards_allowed_distribution = self.init_distribution(self.stats.def_air_yards_per_attempt, self.def_pass_yards_per_play_variance)
+            self.off_air_yards_distribution = self.init_distribution(self.stats.off_air_yards_per_attempt, self.stats.off_pass_yards_per_play_variance)
+            self.def_air_yards_allowed_distribution = self.init_distribution(self.stats.def_air_yards_per_attempt, self.stats.def_pass_yards_per_play_variance)
 
             self.off_rushing_distribution = self.init_distribution(self.stats.off_rush_yards_per_play_mean, self.stats.off_rush_yards_per_play_variance)
             self.def_rushing_distribution = self.init_distribution(self.stats.def_rush_yards_per_play_mean, self.stats.def_rush_yards_per_play_variance)
@@ -52,7 +52,7 @@ class Team:
     def sample_offensive_air_yards(self) -> float:
         return self.off_air_yards_distribution.rvs()
     
-    def sample_defensive_air_yards_allowed(self) -> float:
+    def sample_defensive_air_yards(self) -> float:
         return self.def_air_yards_allowed_distribution.rvs()
     
     def __str__(self) -> str:

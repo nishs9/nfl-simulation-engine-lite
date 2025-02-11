@@ -1,37 +1,24 @@
-from game_model.GameModel import AbstractGameModel
-from fourth_down_models.models import v1_fdm
-import pandas as pd
+from game_model.GameModel_V1a import GameModel_V1a
 import random
 
-class GameModel_V1(AbstractGameModel):
+class GameModel_V1b(GameModel_V1a):
     
-    def __init__(self, off_weight=0.65):
-        self.fourth_down_model = v1_fdm
-        self.fourth_down_model_column_mapping = { 0: "run", 1: "pass",
-                                                2: "punt", 3: "field_goal" }
+    def __init__(self, off_weight=0.575):
         super().__init__(off_weight)
 
     def get_model_code(self) -> str:
-        return "v1"
+        return "v1b"
 
-    def get_half_seconds_remaining(self, qtr: int, qtr_seconds_remaining: int) -> int:
-        if qtr == 1 or qtr == 3:
-            return qtr_seconds_remaining + 900
-        else:
-            return qtr_seconds_remaining
+    def get_projected_pass_yards_for_play(self, posteam: object, defteam: object) -> float:
+        off_air_yards_per_attempt = posteam.sample_offensive_air_yards()
+        def_air_yards_per_attempt = defteam.sample_defensive_air_yards()
+        weighted_air_yards_per_attempt = self.get_weighted_average(off_air_yards_per_attempt, def_air_yards_per_attempt)
 
-    def handle_4th_down(self, game_state: dict) -> str:
-        posteam = game_state["possession_team"].name
-        defteam = game_state["defense_team"].name
-        fourth_down_data = {
-            "game_seconds_remaining": game_state["game_seconds_remaining"],
-            "half_seconds_remaining": self.get_half_seconds_remaining(game_state["quarter"], game_state["quarter_seconds_remaining"]),
-            "ydstogo": game_state["distance"],
-            "yardline_100": game_state["yardline"],
-            "score_differential": game_state["score"][posteam] - game_state["score"][defteam]    
-        }
-        prediction = self.fourth_down_model.predict(pd.DataFrame([fourth_down_data]))
-        return self.fourth_down_model_column_mapping[prediction[0]]
+        off_yac_per_completion = posteam.get_stats().off_yac_per_completion
+        def_yac_per_completion = defteam.get_stats().def_yac_per_completion
+        weighted_yac_per_completion = self.get_weighted_average(off_yac_per_completion, def_yac_per_completion)
+
+        return weighted_air_yards_per_attempt + weighted_yac_per_completion
 
     def resolve_play(self, game_state: dict) -> dict:
         posteam = game_state["possession_team"]
@@ -40,7 +27,7 @@ class GameModel_V1(AbstractGameModel):
         defteam = game_state["defense_team"]
         defteam_stats = defteam.get_stats()
 
-        time_elapsed = random.randint(15,40)
+        time_elapsed = random.randint(17,30)
 
         play_type = None
         if (game_state["down"] == 4):
@@ -55,7 +42,7 @@ class GameModel_V1(AbstractGameModel):
             return {
                 "play_type": "punt", 
                 "field_goal_made": None,
-                "yards_gained": 40,
+                "yards_gained": random.randint(40,55),
                 "time_elapsed": time_elapsed, 
                 "quarter": game_state["quarter"],
                 "quarter_seconds_remaining": game_state["quarter_seconds_remaining"],
@@ -78,28 +65,24 @@ class GameModel_V1(AbstractGameModel):
             }
 
         # Handle normal play calls (run or pass)
-        off_yards_per_play = None
-        def_yards_per_play = None
+        weighted_yards_per_play = None
         if (play_type == "run"):
             off_yards_per_play = posteam.sample_offensive_rushing_play()
             def_yards_per_play = defteam.sample_defensive_rushing_play()
+            weighted_yards_per_play = self.get_weighted_average(off_yards_per_play, def_yards_per_play)
         else:
-            off_yards_per_play = posteam.sample_offensive_passing_play()
-            def_yards_per_play = defteam.sample_defensive_passing_play()
-        
-        weighted_yards_per_play = self.get_weighted_average(off_yards_per_play, def_yards_per_play)
-
-        if (play_type == "pass"):
             off_pass_cmp_rate = posteam_stats.pass_completion_rate / 100
             def_pass_cmp_rate = defteam_stats.pass_completion_rate_allowed / 100
             weighted_pass_cmp_rate = self.get_weighted_average(off_pass_cmp_rate, def_pass_cmp_rate)
             pass_completed = random.choices([True, False], [weighted_pass_cmp_rate, 1 - weighted_pass_cmp_rate])[0]
             if (not pass_completed):
-               weighted_yards_per_play = 0 
+               weighted_yards_per_play = 0
+            else:
+                weighted_yards_per_play = self.get_projected_pass_yards_for_play(posteam, defteam)
 
         off_turnover_rate = posteam_stats.turnover_rate
         def_turnover_rate = defteam_stats.forced_turnover_rate
-        weighted_turnover_rate = (0.45) * (self.get_weighted_average(off_turnover_rate, def_turnover_rate))
+        weighted_turnover_rate = (0.375) * (self.get_weighted_average(off_turnover_rate, def_turnover_rate))
         turnover_on_play = random.choices([True, False], [weighted_turnover_rate, 1 - weighted_turnover_rate])[0]
 
         if (not turnover_on_play):

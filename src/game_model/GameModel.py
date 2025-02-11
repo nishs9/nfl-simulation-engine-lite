@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from functools import lru_cache
 
-class GameModel(ABC):
+class AbstractGameModel(ABC):
 
     def __init__(self, off_weight=0.55):
         self.off_weight = off_weight

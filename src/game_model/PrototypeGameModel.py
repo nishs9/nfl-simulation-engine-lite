@@ -1,7 +1,7 @@
-from game_model.GameModel import GameModel
+from game_model.GameModel import AbstractGameModel
 import random
 
-class PrototypeGameModel(GameModel):
+class PrototypeGameModel(AbstractGameModel):
 
     def __init__(self, off_weight=0.55):
         super().__init__(off_weight=off_weight)
