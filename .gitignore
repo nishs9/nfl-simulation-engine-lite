@@ -174,3 +174,4 @@ data/*.csv
 input/*.csv
 nfl_stats.db
 simulation_logs/*.csv
+src/logs/*.csv

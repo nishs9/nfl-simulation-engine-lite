@@ -4,7 +4,7 @@ from game_model.game_model_factory import initialize_new_game_model_instance
 from game_model.game_model import AbstractGameModel
 from game_model.prototype_game_model import PrototypeGameModel
 from game_engine.game_engine import GameEngine
-from team.Team import Team
+from team.team import Team
 from time import time
 from tqdm import tqdm
 import csv
@@ -13,8 +13,8 @@ import os
 import pandas as pd
 import random
 import requests
-import sqlite3
-import team.TeamFactory as TeamFactory
+import team.team_factory as TeamFactory
+import utils.play_log_util as plu
 import warnings
 
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
@@ -164,12 +164,82 @@ def run_multiple_simulations_with_statistics(home_team_abbrev: str, away_team_ab
     return generate_simulation_stats_summary(home_team, away_team, home_wins, num_simulations, home_team_stats_df_list, away_team_stats_df_list)
 
 def run_simulation_chunk(home_team: Team, away_team: Team, game_model: AbstractGameModel, start_index: int, num_simulations_for_chunk: int) -> list:
-    pass
+    chunk_results = []
+    for i in range(num_simulations_for_chunk):
+        game_engine = GameEngine(home_team, away_team, game_model)
+        game_summary = game_engine.run_simulation()
+        chunk_results.append((start_index + i, game_summary))
+    return chunk_results
+
+def run_multiple_simulations_multi_threaded(home_team_abbrev: str, away_team_abbrev: str, num_simulations: int, game_model=PrototypeGameModel(), num_workers=None):
+    home_team, away_team = initialize_teams_for_game_engine(home_team_abbrev, away_team_abbrev)
+    print(f"Running {num_simulations} simulations of {home_team.name} vs. {away_team.name}.")
+
+    ## The default number of workers is half the number of CPU cores
+    number_of_workers = min(num_simulations, os.cpu_count() // 2)
+    if num_workers:
+        number_of_workers = num_workers
+    chunk_size = math.ceil(num_simulations / number_of_workers)
+
+    print(f"Using a chunk size of {chunk_size} and {number_of_workers} workers...\n")
+
+    futures = []
+    with ProcessPoolExecutor(max_workers=number_of_workers) as executor:
+        start_index = 0
+        for _ in range(number_of_workers):
+            sim_count_for_curr_chunk = min(chunk_size, num_simulations - start_index)
+            if sim_count_for_curr_chunk <= 0:
+                break
+            futures.append(executor.submit(
+                run_simulation_chunk,
+                home_team,
+                away_team,
+                game_model,
+                start_index,
+                sim_count_for_curr_chunk
+            ))
+            start_index += sim_count_for_curr_chunk
+        
+        all_results = []
+        print(f"Running {num_simulations} simulations over {number_of_workers} chunks...")
+        with tqdm(total=number_of_workers) as pbar:
+            for future in as_completed(futures):
+                chunk_results = future.result()
+                all_results.extend(chunk_results)
+                pbar.update(1)
+
+    home_wins = 0
+    home_team_stats_df_list = []
+    away_team_stats_df_list = []
+    
+    # Randomly choose a game to be featured in detail on the frontend
+    featured_game_index = random.randint(0, len(all_results) - 1)
+    featured_play_log = None
+
+    for i, game_summary in all_results:
+        final_score = game_summary["final_score"]
+        if i == featured_game_index:
+            featured_play_log = pd.DataFrame(game_summary["play_log"])
+            featured_play_log["game_time_elapsed"] = (featured_play_log["game_seconds_remaining"] - 3600) * -1
+            featured_play_log.to_csv("logs/featured_game.csv", index=True)
+        if final_score[home_team.name] > final_score[away_team.name]:
+            home_wins += 1
+        home_team_stats_df_list.append(pd.DataFrame(game_summary[home_team_abbrev], index=[i]))
+        away_team_stats_df_list.append(pd.DataFrame(game_summary[away_team_abbrev], index=[i]))
+
+    sim_result = generate_simulation_stats_summary(home_team, away_team, home_wins, num_simulations, home_team_stats_df_list, away_team_stats_df_list)
+    sim_result["featured_game_home_pass_data"] = plu.generate_team_passing_stats_summary(home_team_abbrev, featured_play_log)
+    sim_result["featured_game_away_pass_data"] = plu.generate_team_passing_stats_summary(away_team_abbrev, featured_play_log)
+    sim_result["featured_game_home_rush_data"] = plu.generate_team_rushing_stats_summary(home_team_abbrev, featured_play_log)
+    sim_result["featured_game_away_rush_data"] = plu.generate_team_rushing_stats_summary(away_team_abbrev, featured_play_log)
+    sim_result["featured_game_home_scoring_data"] = plu.generate_team_scoring_summary(home_team_abbrev, featured_play_log)
+    sim_result["featured_game_away_scoring_data"] = plu.generate_team_scoring_summary(away_team_abbrev, featured_play_log)
+    return sim_result
 
 if __name__ == "__main__":
     home_team = "BUF"
     away_team = "PHI"
-    num_simulations = 500
+    num_simulations = 1000
     ## ADD SIMULATION INVOCATION BELOW ##
     # single_simulation_result = run_single_simulation(home_team, away_team)
     # print(single_simulation_result)
@@ -178,17 +248,17 @@ if __name__ == "__main__":
     # exec_end = time()
     # print(f"\nExecution time: {exec_end - exec_start} seconds.\n")
 
-    exec_start = time()
-    run_multiple_simulations_with_statistics(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1"))
-    exec_end = time()
-    print(f"\nExecution time: {exec_end - exec_start} seconds.")
+    # exec_start = time()
+    # run_multiple_simulations_with_statistics(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1"))
+    # exec_end = time()
+    # print(f"\nExecution time: {exec_end - exec_start} seconds.")
+
+    # exec_start = time()
+    # run_multiple_simulations_with_statistics(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1a"))
+    # exec_end = time()
+    # print(f"\nExecution time: {exec_end - exec_start} seconds.")
 
     exec_start = time()
-    run_multiple_simulations_with_statistics(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1a"))
-    exec_end = time()
-    print(f"\nExecution time: {exec_end - exec_start} seconds.")
-
-    exec_start = time()
-    run_multiple_simulations_with_statistics(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"))
+    run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=4)
     exec_end = time()
     print(f"\nExecution time: {exec_end - exec_start} seconds.")
