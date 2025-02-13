@@ -1,4 +1,4 @@
-from game_model.PrototypeGameModel import PrototypeGameModel
+from game_model.prototype_game_model import PrototypeGameModel
 from team.Team import Team
 import pandas as pd
 
