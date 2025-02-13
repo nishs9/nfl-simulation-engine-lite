@@ -23,10 +23,10 @@ def hydrate_db(pbp_df: pd.DataFrame, season: int, save_raw_data: bool, filter_da
 
     # Optionally, save the raw play-by-play data to a CSV file
     if (save_raw_data and not filter_data):
-        raw_output_file = f"../data/{season}_NFL_raw.csv"
+        raw_output_file = f"data/{season}_NFL_raw.csv"
         pbp_df.to_csv(raw_output_file, index=False)
     elif (filter_data):
-        filtered_output_file = f"../data/{season}_NFL_filtered.csv"
+        filtered_output_file = f"data/{season}_NFL_filtered.csv"
         filtered_pbp_data.to_csv(filtered_output_file, index=False)
 
     setup_sim_engine_team_stats_table(filtered_pbp_data, db_conn)
@@ -40,7 +40,7 @@ def hydrate_db_online(season: int, save_raw_data: bool, filter_data: bool) -> No
 
 def hydrate_db_local(season: int, save_raw_data: bool, filter_data: bool) -> None:
     try:
-        raw_pbp_data = pd.read_csv(f"../input/play_by_play_{season}.csv")
+        raw_pbp_data = pd.read_csv(f"input/play_by_play_{season}.csv")
         hydrate_db(raw_pbp_data, season, save_raw_data, filter_data)
     except FileNotFoundError as err:
         print("Local play-by-play data file not found. Please download the data from nflverse on GitHub and put it in the data folder.")

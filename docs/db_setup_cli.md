@@ -7,7 +7,7 @@ The `db_setup.py` script is a CLI that can be used to setup the backing DB that 
 2. Full DB Hydration (local) -> Retrieves the PBP data from a local file and generates the sim engine team stats table. This is meant to be a backup option if we aren't able to generate the data via the online flow
 
 #### Options:
-1. (-l) --local: This is the flag to run the db hydration flow script using a raw CSV saved in the `input` folder
+1. (-l) --local: This is the flag to run the db hydration flow script using a raw CSV saved in the `src/db/input` folder
 2. (-r) --save_raw_pbp: This flag can be used to tell the program to save the full play-by-play data as a CSV
 3. (-f) --save_filtered_pbp: This flag can be used to tell the program to save the filtered play-by-play data that is used for calculating team statistics used in the simulation engine.
 
