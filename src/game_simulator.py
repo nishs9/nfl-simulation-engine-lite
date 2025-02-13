@@ -1,24 +1,27 @@
+from concurrent.futures import ProcessPoolExecutor, as_completed
+from db.db_conn import get_db_conn
 from game_model.game_model_factory import initialize_new_game_model_instance
+from game_model.game_model import AbstractGameModel
 from game_model.prototype_game_model import PrototypeGameModel
 from game_engine.game_engine import GameEngine
 from team.Team import Team
 from time import time
 from tqdm import tqdm
-import team.TeamFactory as TeamFactory
-import random
-import pandas as pd
+import csv
 import math
 import os
-import warnings
-import csv
+import pandas as pd
+import random
 import requests
 import sqlite3
+import team.TeamFactory as TeamFactory
+import warnings
 
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
 
 def initialize_teams_for_game_engine(home_team_abbrev: str, away_team_abbrev: str) -> tuple:
-    db_conn = sqlite3.connect("nfl_stats.db")   
+    db_conn = get_db_conn() 
     home_team = TeamFactory.initialize_team(home_team_abbrev, db_conn)
     away_team = TeamFactory.initialize_team(away_team_abbrev, db_conn) 
     db_conn.close()
@@ -159,6 +162,9 @@ def run_multiple_simulations_with_statistics(home_team_abbrev: str, away_team_ab
             pbar.update(1)
 
     return generate_simulation_stats_summary(home_team, away_team, home_wins, num_simulations, home_team_stats_df_list, away_team_stats_df_list)
+
+def run_simulation_chunk(home_team: Team, away_team: Team, game_model: AbstractGameModel, start_index: int, num_simulations_for_chunk: int) -> list:
+    pass
 
 if __name__ == "__main__":
     home_team = "BUF"
