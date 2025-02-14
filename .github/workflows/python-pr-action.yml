@@ -30,4 +30,5 @@ jobs:
     - name: Run sim engine test suite
       run: |
         pip install -e .
+        cd src/nfl_simulation_engine_lite
         pytest -v
