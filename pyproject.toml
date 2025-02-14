@@ -1,0 +1,14 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name =  "nfl_simulation_engine_lite"
+version = "0.1.0"
+description = "A lightweight NFL simulation engine"
+
+[project.urls]
+Homepage = "https://github.com/nishs9/nfl-simulation-engine-lite"
+
+[tool.pytest.ini_options]
+pythonpath = ["src/nfl_simulation_engine_lite"]

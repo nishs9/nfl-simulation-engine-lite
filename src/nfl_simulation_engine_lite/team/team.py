@@ -1,5 +1,5 @@
 from scipy.stats import lognorm
-import team.team_stats as TeamStats
+import nfl_simulation_engine_lite.team.team_stats as TeamStats
 import numpy as np
 
 class Team:

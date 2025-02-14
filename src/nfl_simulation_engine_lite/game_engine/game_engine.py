@@ -1,5 +1,5 @@
-from game_model.prototype_game_model import PrototypeGameModel
-from team.team import Team
+from nfl_simulation_engine_lite.game_model.prototype_game_model import PrototypeGameModel
+from nfl_simulation_engine_lite.team.team import Team
 import pandas as pd
 
 class GameEngine:

@@ -1,5 +1,5 @@
-from team.team import Team
-from team.team_stats import TeamStats
+from nfl_simulation_engine_lite.team.team import Team
+from nfl_simulation_engine_lite.team.team_stats import TeamStats
 from sqlite3 import Connection
 import pandas as pd
 

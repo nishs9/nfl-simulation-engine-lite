@@ -1,4 +1,4 @@
-from game_model.game_model import AbstractGameModel
+from nfl_simulation_engine_lite.game_model.game_model import AbstractGameModel
 import random
 
 class PrototypeGameModel(AbstractGameModel):

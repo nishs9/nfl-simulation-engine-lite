@@ -1,10 +1,10 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
-from db.db_conn import get_db_conn
-from game_model.game_model_factory import initialize_new_game_model_instance
-from game_model.game_model import AbstractGameModel
-from game_model.prototype_game_model import PrototypeGameModel
-from game_engine.game_engine import GameEngine
-from team.team import Team
+from nfl_simulation_engine_lite.db.db_conn import get_db_conn
+from nfl_simulation_engine_lite.game_model.game_model_factory import initialize_new_game_model_instance
+from nfl_simulation_engine_lite.game_model.game_model import AbstractGameModel
+from nfl_simulation_engine_lite.game_model.prototype_game_model import PrototypeGameModel
+from nfl_simulation_engine_lite.game_engine.game_engine import GameEngine
+from nfl_simulation_engine_lite.team.team import Team
 from time import time
 from tqdm import tqdm
 import csv
@@ -13,8 +13,8 @@ import os
 import pandas as pd
 import random
 import requests
-import team.team_factory as TeamFactory
-import utils.play_log_util as plu
+import nfl_simulation_engine_lite.team.team_factory as TeamFactory
+import nfl_simulation_engine_lite.utils.play_log_util as plu
 import warnings
 
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
@@ -237,8 +237,8 @@ def run_multiple_simulations_multi_threaded(home_team_abbrev: str, away_team_abb
     return sim_result
 
 if __name__ == "__main__":
-    home_team = "BUF"
-    away_team = "PHI"
+    home_team = "ATL"
+    away_team = "LV"
     num_simulations = 1000
     ## ADD SIMULATION INVOCATION BELOW ##
     # single_simulation_result = run_single_simulation(home_team, away_team)
@@ -259,6 +259,6 @@ if __name__ == "__main__":
     # print(f"\nExecution time: {exec_end - exec_start} seconds.")
 
     exec_start = time()
-    run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=4)
+    run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     exec_end = time()
     print(f"\nExecution time: {exec_end - exec_start} seconds.")

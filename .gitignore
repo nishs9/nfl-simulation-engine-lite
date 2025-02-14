@@ -172,6 +172,5 @@ cython_debug/
 .pypirc
 data/*.csv
 input/*.csv
-nfl_stats.db
-simulation_logs/*.csv
-src/logs/*.csv
+src/simulation_logs/*.csv
+src/nfl_simulation_engine_lite/logs/*.csv
