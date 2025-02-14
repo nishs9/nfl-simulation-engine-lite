@@ -1,0 +1,1 @@
+This directory will be populated with CSVs containing the stats from each simulation run. They are titled in the following format: "<home_team>_<away_team>_stats.csv". Just as a further note, they will get overwritten if you keep running the same matchups through the engine.
