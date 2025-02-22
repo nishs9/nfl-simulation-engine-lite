@@ -1,0 +1,19 @@
+FROM python:3.11-slim
+
+WORKDIR /sim-engine-api
+
+COPY ./api /sim-engine-api/api
+COPY ./src /sim-engine-api/src
+COPY pyproject.toml requirements.txt ./
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && apt-get purge -y --auto-remove \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -e .
+
+EXPOSE 3001
+
+CMD ["python", "api/run.py"]
