@@ -2,14 +2,16 @@ version: '3.8'
 
 services:
   sim_engine_api:
+    environment:
+      - PORT=${PORT}
+      - FLASK_ENV=development
     build:
       context: .
       dockerfile: api_Dockerfile
     container_name: sim_engine_api
     ports:
-      - "3001:3001"
+      - "${PORT}:${PORT}"
     volumes:
       - ./src:/app/src
-    environment:
-      - FLASK_ENV=development
+      
     restart: always
