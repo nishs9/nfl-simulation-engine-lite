@@ -1,4 +1,4 @@
-from game_model.game_model_v1a import GameModel_V1a
+from nfl_simulation_engine_lite.game_model.game_model_v1a import GameModel_V1a
 import random
 
 class GameModel_V1b(GameModel_V1a):

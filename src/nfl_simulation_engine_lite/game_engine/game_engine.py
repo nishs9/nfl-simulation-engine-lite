@@ -151,12 +151,13 @@ class GameEngine:
             self.away_team.name: self.generate_team_stats_summary(self.away_team.name, away_team_df)
         }
 
-        if (not test_mode):
-            play_log_df.to_csv(f"../simulation_logs/{self.home_team.name}_{self.away_team.name}_play_log.csv", index=True)
-            home_team_stats_df = pd.DataFrame([game_summary_dict[self.home_team.name]])
-            away_team_stats_df = pd.DataFrame([game_summary_dict[self.away_team.name]])
-            team_stats_df = pd.concat([home_team_stats_df, away_team_stats_df])
-            team_stats_df.to_csv(f"../simulation_logs/{self.home_team.name}_{self.away_team.name}_team_stats.csv", index=False)
+        ## TODO: Figure out whether this is even needed
+        # if (not test_mode):
+        #     play_log_df.to_csv(f"simulation_logs/{self.home_team.name}_{self.away_team.name}_play_log.csv", index=True)
+        #     home_team_stats_df = pd.DataFrame([game_summary_dict[self.home_team.name]])
+        #     away_team_stats_df = pd.DataFrame([game_summary_dict[self.away_team.name]])
+        #     team_stats_df = pd.concat([home_team_stats_df, away_team_stats_df])
+        #     team_stats_df.to_csv(f"simulation_logs/{self.home_team.name}_{self.away_team.name}_team_stats.csv", index=False)
 
         return game_summary_dict
     

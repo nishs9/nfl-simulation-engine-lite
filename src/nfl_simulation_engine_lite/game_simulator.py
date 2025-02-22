@@ -38,7 +38,7 @@ def run_single_simulation(home_team_abbrev: str, away_team_abbrev:str, game_mode
             print("\n")
     return game_summary
 
-def run_multiple_simulations(home_team_abbrev: str, away_team_abbrev: str, num_simulations: int, game_model=PrototypeGameModel()):
+def run_multiple_simulations(home_team_abbrev: str, away_team_abbrev: str, num_simulations: int, game_model=PrototypeGameModel()) -> None:
     home_team, away_team = initialize_teams_for_game_engine(home_team_abbrev, away_team_abbrev)
     
     home_wins = 0
@@ -58,19 +58,19 @@ def run_multiple_simulations(home_team_abbrev: str, away_team_abbrev: str, num_s
 
 def generate_simulation_stats_summary(home_team: Team, away_team: Team, home_wins: int, 
                                       num_simulations: int, home_team_stats_df_list: list[pd.DataFrame], 
-                                      away_team_stats_df_list: list[pd.DataFrame]) -> dict:
+                                      away_team_stats_df_list: list[pd.DataFrame], debug_mode=True) -> dict:
     
     home_team_sim_stats_df = pd.concat(home_team_stats_df_list)
     away_team_sim_stats_df = pd.concat(away_team_stats_df_list)
     combined_sim_stats_df = pd.concat([home_team_sim_stats_df, away_team_sim_stats_df])
     
-    home_team_sim_stats_df.to_csv(f"../simulation_logs/{home_team.name}_sim_stats.csv", index=True)
-    away_team_sim_stats_df.to_csv(f"../simulation_logs/{away_team.name}_sim_stats.csv", index=True)
-    combined_sim_stats_df.to_csv(f"../simulation_logs/{home_team.name}_{away_team.name}_sim_stats.csv", index=True)
+    if debug_mode:
+        home_team_sim_stats_df.to_csv(f"../simulation_logs/{home_team.name}_sim_stats.csv", index=True)
+        away_team_sim_stats_df.to_csv(f"../simulation_logs/{away_team.name}_sim_stats.csv", index=True)
+        combined_sim_stats_df.to_csv(f"../simulation_logs/{home_team.name}_{away_team.name}_sim_stats.csv", index=True)
 
-    # Load the data
-    home_team_df = pd.read_csv(f"../simulation_logs/{home_team.name}_sim_stats.csv")
-    away_team_df = pd.read_csv(f"../simulation_logs/{away_team.name}_sim_stats.csv")
+    home_team_df = home_team_sim_stats_df
+    away_team_df = away_team_sim_stats_df
 
     stats_columns = ["team","score","run_rate","pass_rate","pass_cmp_rate",
                     "pass_yards","passing_tds","sacks_allowed","pass_yards_per_play",
@@ -116,10 +116,10 @@ def generate_simulation_stats_summary(home_team: Team, away_team: Team, home_win
     home_team_sim_stats_df = pd.DataFrame(home_team_sim_stats_dict, index=[0], columns=stats_columns)
     away_team_sim_stats_df = pd.DataFrame(away_team_sim_stats_dict, index=[0], columns=stats_columns)
 
-    stats_csv_path = "../simulation_logs/total_sim_stats.csv"
-
     total_sim_stats_df = pd.concat([home_team_sim_stats_df, away_team_sim_stats_df])
-    total_sim_stats_df.to_csv(stats_csv_path, index=False)
+    if debug_mode:
+        stats_csv_path = "../simulation_logs/total_sim_stats.csv"
+        total_sim_stats_df.to_csv(stats_csv_path, index=False)
     total_sim_stats_dict = total_sim_stats_df.reset_index().to_dict(orient="records")
     #print(total_sim_stats_dict)
 
@@ -139,7 +139,7 @@ def generate_simulation_stats_summary(home_team: Team, away_team: Team, home_win
         "average_score_diff": average_score_diff
     }
 
-def run_multiple_simulations_with_statistics(home_team_abbrev: str, away_team_abbrev: str, num_simulations: int, game_model=PrototypeGameModel()) -> dict:
+def run_multiple_simulations_with_statistics(home_team_abbrev: str, away_team_abbrev: str, num_simulations: int, game_model=PrototypeGameModel(), debug_mode=True) -> dict:
     home_team, away_team = initialize_teams_for_game_engine(home_team_abbrev, away_team_abbrev)
 
     home_wins = 0
@@ -161,7 +161,7 @@ def run_multiple_simulations_with_statistics(home_team_abbrev: str, away_team_ab
             i += 1
             pbar.update(1)
 
-    return generate_simulation_stats_summary(home_team, away_team, home_wins, num_simulations, home_team_stats_df_list, away_team_stats_df_list)
+    return generate_simulation_stats_summary(home_team, away_team, home_wins, num_simulations, home_team_stats_df_list, away_team_stats_df_list, debug_mode=debug_mode)
 
 def run_simulation_chunk(home_team: Team, away_team: Team, game_model: AbstractGameModel, start_index: int, num_simulations_for_chunk: int) -> list:
     chunk_results = []
@@ -171,7 +171,7 @@ def run_simulation_chunk(home_team: Team, away_team: Team, game_model: AbstractG
         chunk_results.append((start_index + i, game_summary))
     return chunk_results
 
-def run_multiple_simulations_multi_threaded(home_team_abbrev: str, away_team_abbrev: str, num_simulations: int, game_model=PrototypeGameModel(), num_workers=None):
+def run_multiple_simulations_multi_threaded(home_team_abbrev: str, away_team_abbrev: str, num_simulations: int, game_model=PrototypeGameModel(), num_workers=None, debug_mode=True) -> dict:
     home_team, away_team = initialize_teams_for_game_engine(home_team_abbrev, away_team_abbrev)
     print(f"Running {num_simulations} simulations of {home_team.name} vs. {away_team.name}.")
 
@@ -221,13 +221,14 @@ def run_multiple_simulations_multi_threaded(home_team_abbrev: str, away_team_abb
         if i == featured_game_index:
             featured_play_log = pd.DataFrame(game_summary["play_log"])
             featured_play_log["game_time_elapsed"] = (featured_play_log["game_seconds_remaining"] - 3600) * -1
-            featured_play_log.to_csv("logs/featured_game.csv", index=True)
+            if debug_mode:
+                featured_play_log.to_csv("logs/featured_game.csv", index=True)
         if final_score[home_team.name] > final_score[away_team.name]:
             home_wins += 1
         home_team_stats_df_list.append(pd.DataFrame(game_summary[home_team_abbrev], index=[i]))
         away_team_stats_df_list.append(pd.DataFrame(game_summary[away_team_abbrev], index=[i]))
 
-    sim_result = generate_simulation_stats_summary(home_team, away_team, home_wins, num_simulations, home_team_stats_df_list, away_team_stats_df_list)
+    sim_result = generate_simulation_stats_summary(home_team, away_team, home_wins, num_simulations, home_team_stats_df_list, away_team_stats_df_list, debug_mode=debug_mode)
     sim_result["featured_game_home_pass_data"] = plu.generate_team_passing_stats_summary(home_team_abbrev, featured_play_log)
     sim_result["featured_game_away_pass_data"] = plu.generate_team_passing_stats_summary(away_team_abbrev, featured_play_log)
     sim_result["featured_game_home_rush_data"] = plu.generate_team_rushing_stats_summary(home_team_abbrev, featured_play_log)
@@ -239,7 +240,7 @@ def run_multiple_simulations_multi_threaded(home_team_abbrev: str, away_team_abb
 if __name__ == "__main__":
     home_team = "ATL"
     away_team = "LV"
-    num_simulations = 1000
+    num_simulations = 3000
     ## ADD SIMULATION INVOCATION BELOW ##
     # single_simulation_result = run_single_simulation(home_team, away_team)
     # print(single_simulation_result)
@@ -257,6 +258,11 @@ if __name__ == "__main__":
     # run_multiple_simulations_with_statistics(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1a"))
     # exec_end = time()
     # print(f"\nExecution time: {exec_end - exec_start} seconds.")
+
+    exec_start = time()
+    run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=2)
+    exec_end = time()
+    print(f"\nExecution time: {exec_end - exec_start} seconds.")
 
     exec_start = time()
     run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)

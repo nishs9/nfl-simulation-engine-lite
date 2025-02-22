@@ -1,9 +1,15 @@
+blinker==1.9.0
 certifi==2024.12.14
 charset-normalizer==3.4.1
+click==8.1.8
+Flask==3.1.0
 idna==3.10
 iniconfig==2.0.0
+itsdangerous==2.2.0
+Jinja2==3.1.5
 joblib==1.4.2
--e git+https://github.com/nishs9/nfl-simulation-engine-lite.git@5f00ef4c8795611fcb412b7a9ebc0589db403d81#egg=nfl_simulation_engine_lite
+MarkupSafe==3.0.2
+-e git+https://github.com/nishs9/nfl-simulation-engine-lite.git@d3e13f46734975d2e8231fd562127eec11feea20#egg=nfl_simulation_engine_lite
 numpy==1.26.4
 packaging==24.2
 pandas==2.2.3
@@ -19,3 +25,4 @@ threadpoolctl==3.5.0
 tqdm==4.67.1
 tzdata==2024.2
 urllib3==2.3.0
+Werkzeug==3.1.3
