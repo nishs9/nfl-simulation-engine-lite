@@ -4,7 +4,8 @@ from sqlite3 import Connection
 import pandas as pd
 
 def initialize_team(team_abbrev: str, db_conn: Connection) -> Team:
-    team_stats_df = pd.read_sql(f"SELECT * FROM sim_engine_team_stats_2024 WHERE team = '{team_abbrev}'", db_conn)
+    team_query = "SELECT * FROM sim_engine_team_stats_2024 WHERE team = ?"
+    team_stats_df = pd.read_sql_query(team_query, db_conn, params=(team_abbrev,))
     team_stats = initialize_team_stats(team_stats_df.iloc[0].to_dict())
     team = Team(team_abbrev, team_stats)
     return team

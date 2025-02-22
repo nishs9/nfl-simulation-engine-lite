@@ -240,7 +240,7 @@ def run_multiple_simulations_multi_threaded(home_team_abbrev: str, away_team_abb
 if __name__ == "__main__":
     home_team = "ATL"
     away_team = "LV"
-    num_simulations = 3000
+    num_simulations = 100
     ## ADD SIMULATION INVOCATION BELOW ##
     # single_simulation_result = run_single_simulation(home_team, away_team)
     # print(single_simulation_result)
@@ -259,12 +259,12 @@ if __name__ == "__main__":
     # exec_end = time()
     # print(f"\nExecution time: {exec_end - exec_start} seconds.")
 
-    exec_start = time()
-    run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=2)
-    exec_end = time()
-    print(f"\nExecution time: {exec_end - exec_start} seconds.")
+    # exec_start = time()
+    # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=2)
+    # exec_end = time()
+    # print(f"\nExecution time: {exec_end - exec_start} seconds.")
 
     exec_start = time()
-    run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
+    run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("proto"), num_workers=3)
     exec_end = time()
     print(f"\nExecution time: {exec_end - exec_start} seconds.")
