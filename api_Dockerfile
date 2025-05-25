@@ -23,4 +23,5 @@ ENV PYTHONPATH=/sim-engine-api
 # The port will be set by Railway
 EXPOSE ${PORT:-3001}
 
-CMD ["python", "api/run.py"]
+# Use the full path to run.py
+CMD ["python", "/sim-engine-api/api/run.py"]
