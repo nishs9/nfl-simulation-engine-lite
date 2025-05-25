@@ -15,17 +15,14 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install -e .
 
-# Create a shell script to run the application
-RUN echo '#!/bin/bash\ncd /sim-engine-api\npython api/run.py' > /sim-engine-api/run.sh
-RUN chmod +x /sim-engine-api/run.sh
-
 # Set environment variables
 ENV FLASK_ENV=production
+ENV FLASK_APP=api.run:app
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/sim-engine-api
 
 # The port will be set by Railway
 EXPOSE ${PORT:-3001}
 
-# Use the shell script to run the application
-CMD ["/sim-engine-api/run.sh"]
+# Use flask command to run the application
+CMD ["flask", "run", "--host=0.0.0.0"]
