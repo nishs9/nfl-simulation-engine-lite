@@ -1,4 +1,5 @@
 from api.app import create_app
+from nfl_simulation_engine_lite import *
 import os
 
 app = create_app()
