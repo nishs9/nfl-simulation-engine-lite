@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_limiter.util import get_remote_address
 from nfl_simulation_engine_lite.game_simulator import run_multiple_simulations_with_statistics, run_multiple_simulations_multi_threaded
 from nfl_simulation_engine_lite.game_model.game_model_factory import initialize_new_game_model_instance
 
@@ -6,7 +7,11 @@ api_bp = Blueprint('api_bp', __name__)
 
 @api_bp.route('/', methods=['GET'])
 def index():
-    return jsonify({'message': 'Welcome to the NFL Simulation Engine Lite API!'})
+    return jsonify({
+        'status': 'healthy',
+        'version': '1.0.0',
+        'message': 'Welcome to the NFL Simulation Engine Lite API!'
+    })
 
 @api_bp.route('/run-simulations', methods=['POST'])
 def run_simulation():

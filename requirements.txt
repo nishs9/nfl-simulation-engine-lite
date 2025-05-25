@@ -4,6 +4,8 @@ charset-normalizer==3.4.1
 click==8.1.8
 Flask==3.1.0
 Flask-Cors==5.0.0
+Flask-Limiter==3.5.0
+limits==3.7.0
 idna==3.10
 iniconfig==2.0.0
 itsdangerous==2.2.0
@@ -12,7 +14,7 @@ joblib==1.4.2
 MarkupSafe==3.0.2
 -e git+https://github.com/nishs9/nfl-simulation-engine-lite.git@e9f5e591a04ab92f960503352985d4d0d9cc2f46#egg=nfl_simulation_engine_lite
 numpy==1.26.4
-packaging==24.2
+packaging==23.2
 pandas==2.2.3
 pluggy==1.5.0
 pytest==8.3.4
