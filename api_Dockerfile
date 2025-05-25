@@ -8,24 +8,24 @@ RUN apt-get update \
     && apt-get purge -y --auto-remove \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy the entire project first
+# Copy requirements first to leverage Docker cache
+COPY requirements.txt pyproject.toml ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the entire project for installation
 COPY . .
 
-# Install requirements and the package
-RUN pip install --no-cache-dir -r requirements.txt
+# Install the package in development mode
 RUN pip install -e .
-
-# Create a shell script to run the application
-RUN echo '#!/bin/bash\ncd /sim-engine-api\npython api/run.py' > /sim-engine-api/run.sh
-RUN chmod +x /sim-engine-api/run.sh
 
 # Set environment variables
 ENV FLASK_ENV=production
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONPATH=/sim-engine-api
+ENV FLASK_APP=api.run:app
 
 # The port will be set by Railway
 EXPOSE ${PORT:-3001}
 
-# Use the shell script to run the application
-CMD ["/sim-engine-api/run.sh"]
+# Use python to run the application
+CMD ["python", "-m", "api.run"]

@@ -2,7 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from app.routes import api_bp
+from api.app.routes import api_bp
 
 def create_app():
     app = Flask(__name__)
