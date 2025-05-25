@@ -8,18 +8,17 @@ RUN apt-get update \
     && apt-get purge -y --auto-remove \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first to leverage Docker cache
-COPY requirements.txt pyproject.toml ./
+# Copy the entire project first
+COPY . .
+
+# Install requirements and the package
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install -e .
-
-# Copy application code
-COPY ./api /sim-engine-api/api
-COPY ./src /sim-engine-api/src
 
 # Set environment variables
 ENV FLASK_ENV=production
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/sim-engine-api
 
 # The port will be set by Railway
 EXPOSE ${PORT:-3001}
