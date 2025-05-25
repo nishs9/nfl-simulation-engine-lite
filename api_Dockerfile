@@ -2,18 +2,26 @@ FROM python:3.11-slim
 
 WORKDIR /sim-engine-api
 
-COPY ./api /sim-engine-api/api
-COPY ./src /sim-engine-api/src
-COPY pyproject.toml requirements.txt ./
-
+# Install system dependencies
 RUN apt-get update \
     && apt-get install -y --no-install-recommends git \
     && apt-get purge -y --auto-remove \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy requirements first to leverage Docker cache
+COPY requirements.txt pyproject.toml ./
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install -e .
 
-EXPOSE 3001
+# Copy application code
+COPY ./api /sim-engine-api/api
+COPY ./src /sim-engine-api/src
+
+# Set environment variables
+ENV FLASK_ENV=production
+ENV PYTHONUNBUFFERED=1
+
+# The port will be set by Railway
+EXPOSE ${PORT:-3001}
 
 CMD ["python", "api/run.py"]

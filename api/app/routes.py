@@ -4,6 +4,13 @@ from nfl_simulation_engine_lite.game_model.game_model_factory import initialize_
 
 api_bp = Blueprint('api_bp', __name__)
 
+@api_bp.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        'status': 'healthy',
+        'version': '1.0.0'
+    })
+
 @api_bp.route('/', methods=['GET'])
 def index():
     return jsonify({'message': 'Welcome to the NFL Simulation Engine Lite API!'})
