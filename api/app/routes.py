@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_limiter.util import get_remote_address
 from nfl_simulation_engine_lite.game_simulator import run_multiple_simulations_with_statistics, run_multiple_simulations_multi_threaded
 from nfl_simulation_engine_lite.game_model.game_model_factory import initialize_new_game_model_instance
+import gc
 
 api_bp = Blueprint('api_bp', __name__)
 
@@ -25,13 +26,26 @@ def run_simulation():
         return jsonify({'message': 'Please provide a home and away team'}), 400
     
     if not num_simulations:
-        return jsonify({'message': 'Please provide the number of simulatiion iterations to be run'}), 400
+        return jsonify({'message': 'Please provide the number of simulation iterations to be run'}), 400
 
     if not game_model:
         game_model = 'proto'
 
     game_model_instance = initialize_new_game_model_instance(game_model)
-    results = run_multiple_simulations_multi_threaded(home_team_abbrev, away_team_abbrev, num_simulations, game_model_instance, num_workers=3, debug_mode=False)
+    
+    results = run_multiple_simulations_multi_threaded(
+        home_team_abbrev, 
+        away_team_abbrev, 
+        num_simulations, 
+        game_model_instance,
+        num_workers=2, 
+        debug_mode=False
+    )
+    
+    # Clean up
+    del game_model_instance
+    gc.collect()
+    
     return jsonify(results)
 
 @api_bp.route('/run-simulation-legacy', methods=['POST'])
@@ -46,7 +60,7 @@ def run_simulation_legacy():
         return jsonify({'message': 'Please provide a home and away team'}), 400
     
     if not num_simulations:
-        return jsonify({'message': 'Please provide the number of simulatiion iterations to be run'}), 400
+        return jsonify({'message': 'Please provide the number of simulation iterations to be run'}), 400
 
     if not game_model:
         game_model = 'proto'

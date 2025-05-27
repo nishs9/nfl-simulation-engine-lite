@@ -176,3 +176,5 @@ src/simulation_logs/*.csv
 src/nfl_simulation_engine_lite/logs/*.csv
 
 .env
+
+cursor/
