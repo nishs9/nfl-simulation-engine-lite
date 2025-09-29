@@ -56,6 +56,65 @@ def run_multiple_simulations(home_team_abbrev: str, away_team_abbrev: str, num_s
     
     print(f"{home_team.name} wins {round(100 * (home_wins/num_simulations), 2)} percent of the time.")
 
+def parse_simulation_result(score_diff: float, home_team: str, away_team: str) -> str:
+    if score_diff > 0:
+        return f"{home_team} wins by {round(score_diff, 2)}"
+    elif score_diff < 0:
+        return f"{away_team} wins by {round(score_diff * -1, 2)}"
+    else:
+        return f"{home_team} and {away_team} tie"
+
+def read_matchup_column(file_path):
+    matchups = []
+    try:
+        with open(file_path, mode='r') as input_file:
+            for line in input_file:
+                line = line.strip()
+                teams = line.split(" v ") 
+                if len(teams) != 2:
+                    raise ValueError("Invalid matchup format. Must be 'TEAM_A v TEAM_B'.")
+                matchups.append((teams[0], teams[1])) 
+    except ValueError as ve:
+        print(f"ValueError: {ve}")
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+
+    return matchups
+
+def run_weekly_predictions(num_simulations=3000, num_workers=None):
+    prediction_run_start = time()
+    matchups = read_matchup_column("input.txt")
+    game_models = [
+        PrototypeGameModel(), initialize_new_game_model_instance("v1"), 
+        initialize_new_game_model_instance("v1a"), initialize_new_game_model_instance("v1b")
+    ]
+    prediction_results = {key: [] for key in matchups}
+    for game_model in game_models:
+        for matchup in matchups:
+            away_team = matchup[0].strip()
+            home_team = matchup[1].strip()
+            print(f"Running simulations for {away_team} at {home_team} with {game_model.get_model_code()}")
+            result = run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model, num_workers=num_workers)
+            prediction_results[matchup].append(parse_simulation_result(result["average_score_diff"], home_team, away_team))
+
+    with open("weekly_predictions.csv", "w") as output_file:
+        writer = csv.DictWriter(output_file, fieldnames=["Matchup", "Prototype", "V1", "V1a", "V1b"])
+        writer.writeheader()
+        for matchup in matchups:
+            writer.writerow({
+                "Matchup": f"{matchup[0]} v {matchup[1]}",
+                "V1b": prediction_results[matchup][3],
+                "V1a": prediction_results[matchup][2],
+                "V1": prediction_results[matchup][1],
+                "Prototype": prediction_results[matchup][0]
+            })
+    prediction_run_end = time()
+    prediction_run_time = prediction_run_end - prediction_run_start
+
+    print("Weekly predictions have been written to 'weekly_predictions.csv'.")
+
 def generate_simulation_stats_summary(home_team: Team, away_team: Team, home_wins: int, 
                                       num_simulations: int, home_team_stats_df_list: list[pd.DataFrame], 
                                       away_team_stats_df_list: list[pd.DataFrame], debug_mode=True) -> dict:
@@ -264,8 +323,9 @@ if __name__ == "__main__":
     # exec_end = time()
     # print(f"\nExecution time: {exec_end - exec_start} seconds.")
 
+    # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
+    # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     exec_start = time()
-    run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
-    run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
+    run_weekly_predictions(num_simulations=1000, num_workers=2)
     exec_end = time()
     print(f"\nExecution time: {exec_end - exec_start} seconds.")
