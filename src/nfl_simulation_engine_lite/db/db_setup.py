@@ -184,6 +184,6 @@ if __name__ == "__main__":
     print("Running NFL Sim Engine Lite DB Setup Script")
     args = init_argparser()
     if args.local:
-        hydrate_db_local(2024, args.save_raw_pbp, args.filter_pbp)
+        hydrate_db_local(2025, args.save_raw_pbp, args.filter_pbp)
     else:
-        hydrate_db_online(2024, args.save_raw_pbp, args.filter_pbp)
+        hydrate_db_online(2025, args.save_raw_pbp, args.filter_pbp)
