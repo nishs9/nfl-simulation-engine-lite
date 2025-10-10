@@ -98,6 +98,23 @@ def run_weekly_predictions(num_simulations=3000, num_workers=None):
             print(f"Running simulations for {away_team} at {home_team} with {game_model.get_model_code()}")
             result = run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model, num_workers=num_workers)
             prediction_results[matchup].append(parse_simulation_result(result["average_score_diff"], home_team, away_team))
+            prediction_results[matchup].append(matchup[1] + " WP%: " + str(result["home_win_pct"]))
+
+    with open("weekly_predictions_enhanced.csv", "w") as output_file:
+        writer = csv.DictWriter(output_file, fieldnames=["Matchup", "Prototype", "Prototype_WP", "V1", "V1_WP", "V1a", "V1a_WP", "V1b", "V1b_WP"])
+        writer.writeheader()
+        for matchup in matchups:
+            writer.writerow({
+                "Matchup": f"{matchup[0]} v {matchup[1]}",
+                "V1b_WP": prediction_results[matchup][7],
+                "V1b": prediction_results[matchup][6],
+                "V1a_WP": prediction_results[matchup][5],
+                "V1a": prediction_results[matchup][4],
+                "V1_WP": prediction_results[matchup][3],
+                "V1": prediction_results[matchup][2],
+                "Prototype_WP": prediction_results[matchup][1],
+                "Prototype": prediction_results[matchup][0]
+            })
 
     with open("weekly_predictions.csv", "w") as output_file:
         writer = csv.DictWriter(output_file, fieldnames=["Matchup", "Prototype", "V1", "V1a", "V1b"])
@@ -105,9 +122,9 @@ def run_weekly_predictions(num_simulations=3000, num_workers=None):
         for matchup in matchups:
             writer.writerow({
                 "Matchup": f"{matchup[0]} v {matchup[1]}",
-                "V1b": prediction_results[matchup][3],
-                "V1a": prediction_results[matchup][2],
-                "V1": prediction_results[matchup][1],
+                "V1b": prediction_results[matchup][6],
+                "V1a": prediction_results[matchup][4],
+                "V1": prediction_results[matchup][2],
                 "Prototype": prediction_results[matchup][0]
             })
     prediction_run_end = time()
@@ -326,6 +343,6 @@ if __name__ == "__main__":
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     exec_start = time()
-    run_weekly_predictions(num_simulations=2500, num_workers=3)
+    run_weekly_predictions(num_simulations=3500, num_workers=3)
     exec_end = time()
     print(f"\nExecution time: {exec_end - exec_start} seconds.")

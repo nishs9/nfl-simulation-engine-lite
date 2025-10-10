@@ -36,10 +36,10 @@ def alt_online_db_hydrate() -> None:
     base_url_1 = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2024.csv.gz'
     base_url_2 = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz'
     raw_pbp_data_1 = pd.read_csv(base_url_1, compression='gzip', low_memory=False)
-    raw_pbp_data_1 = raw_pbp_data_1[raw_pbp_data_1["week"] >= 16]
+    raw_pbp_data_1 = raw_pbp_data_1[raw_pbp_data_1["week"] >= 17]
     raw_pbp_data_2 = pd.read_csv(base_url_2, compression='gzip', low_memory=False)
     raw_pbp_data = pd.concat([raw_pbp_data_1, raw_pbp_data_2])
-    regular_season_data = raw_pbp_data_2[raw_pbp_data_2["season_type"] == "REG"]
+    regular_season_data = raw_pbp_data[raw_pbp_data["season_type"] == "REG"]
     hydrate_db(regular_season_data, 2025, False, False)
 
 def hydrate_db_online(season: int, save_raw_data: bool, filter_data: bool) -> None:

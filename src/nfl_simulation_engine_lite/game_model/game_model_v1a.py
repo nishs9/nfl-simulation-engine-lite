@@ -5,7 +5,7 @@ import random
 
 class GameModel_V1a(GameModel_V1):
     
-    def __init__(self, off_weight=0.625):
+    def __init__(self, off_weight=0.585):
         self.fourth_down_model = v2a_fdm
         self.fourth_down_model_column_mapping = { 0: "goforit", 1: "field_goal", 2: "punt" }
         super().__init__(off_weight)
