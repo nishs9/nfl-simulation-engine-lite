@@ -32,6 +32,16 @@ def hydrate_db(pbp_df: pd.DataFrame, season: int, save_raw_data: bool, filter_da
     setup_sim_engine_team_stats_table(filtered_pbp_data, db_conn)
     db_conn.close()
 
+def alt_online_db_hydrate() -> None:
+    #base_url_1 = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2024.csv.gz'
+    base_url_2 = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz'
+    #raw_pbp_data_1 = pd.read_csv(base_url_1, compression='gzip', low_memory=False)
+    #raw_pbp_data_1 = raw_pbp_data_1[raw_pbp_data_1["week"] >= 17]
+    raw_pbp_data_2 = pd.read_csv(base_url_2, compression='gzip', low_memory=False)
+    #raw_pbp_data = pd.concat([raw_pbp_data_1, raw_pbp_data_2])
+    regular_season_data = raw_pbp_data_2[raw_pbp_data_2["season_type"] == "REG"]
+    hydrate_db(regular_season_data, 2025, False, False)
+
 def hydrate_db_online(season: int, save_raw_data: bool, filter_data: bool) -> None:
     base_url = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_' + str(season) + '.csv.gz'
     raw_pbp_data = pd.read_csv(base_url, compression='gzip', low_memory=False)
@@ -182,8 +192,9 @@ def setup_sim_engine_team_stats_table(raw_pbp_df: pd.DataFrame, db_conn: sqlite3
 
 if __name__ == "__main__":
     print("Running NFL Sim Engine Lite DB Setup Script")
-    args = init_argparser()
-    if args.local:
-        hydrate_db_local(2024, args.save_raw_pbp, args.filter_pbp)
-    else:
-        hydrate_db_online(2024, args.save_raw_pbp, args.filter_pbp)
+    #args = init_argparser()
+    alt_online_db_hydrate()
+    # if args.local:
+    #     hydrate_db_local(2024, args.save_raw_pbp, args.filter_pbp)
+    # else:
+    #     hydrate_db_online(2024, args.save_raw_pbp, args.filter_pbp)

@@ -1,0 +1,13 @@
+MIN v LAC
+MIA v ATL
+NYJ v CIN
+CLE v NE
+NYG v PHI
+BUF v CAR
+CHI v BAL
+SF v HOU
+TB v NO
+DAL v DEN
+TEN v IND
+GB v PIT
+WAS v KC

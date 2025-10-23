@@ -3,7 +3,7 @@ import random
 
 class PrototypeGameModel(AbstractGameModel):
 
-    def __init__(self, off_weight=0.55):
+    def __init__(self, off_weight=0.53):
         super().__init__(off_weight=off_weight)
 
     def get_model_code(self) -> str:
