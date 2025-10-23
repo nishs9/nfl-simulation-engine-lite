@@ -100,7 +100,7 @@ def run_weekly_predictions(num_simulations=3000, num_workers=None):
             prediction_results[matchup].append(parse_simulation_result(result["average_score_diff"], home_team, away_team))
             prediction_results[matchup].append(matchup[1] + " WP%: " + str(result["home_win_pct"]))
 
-    with open("weekly_predictions_enhanced.csv", "w") as output_file:
+    with open("weekly_predictions_enhanced.csv", "w", newline='') as output_file:
         writer = csv.DictWriter(output_file, fieldnames=["Matchup", "Prototype", "Prototype_WP", "V1", "V1_WP", "V1a", "V1a_WP", "V1b", "V1b_WP"])
         writer.writeheader()
         for matchup in matchups:
@@ -116,7 +116,7 @@ def run_weekly_predictions(num_simulations=3000, num_workers=None):
                 "Prototype": prediction_results[matchup][0]
             })
 
-    with open("weekly_predictions.csv", "w") as output_file:
+    with open("weekly_predictions.csv", "w", newline='') as output_file:
         writer = csv.DictWriter(output_file, fieldnames=["Matchup", "Prototype", "V1", "V1a", "V1b"])
         writer.writeheader()
         for matchup in matchups:
@@ -343,6 +343,6 @@ if __name__ == "__main__":
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     exec_start = time()
-    run_weekly_predictions(num_simulations=3500, num_workers=3)
+    run_weekly_predictions(num_simulations=5, num_workers=3)
     exec_end = time()
     print(f"\nExecution time: {exec_end - exec_start} seconds.")
