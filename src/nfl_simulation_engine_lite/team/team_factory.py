@@ -1,16 +1,32 @@
 from nfl_simulation_engine_lite.team.team import Team
 from nfl_simulation_engine_lite.team.team_stats import TeamStats
+from nfl_simulation_engine_lite.team.team_rates import TeamRates
 from sqlite3 import Connection
 import pandas as pd
 
 def initialize_team(team_abbrev: str, db_conn: Connection) -> Team:
-    team_query = "SELECT * FROM sim_engine_team_stats_2024 WHERE team = ?"
-    team_stats_df = pd.read_sql_query(team_query, db_conn, params=(team_abbrev,))
-    team_stats = initialize_team_stats(team_stats_df.iloc[0].to_dict())
-    team = Team(team_abbrev, team_stats)
+    team_stats = initialize_team_stats(team_abbrev, db_conn)
+    team_rates = initialize_team_rates(team_abbrev, db_conn)
+    team_rpi_data = initialize_rpi_data(team_abbrev, db_conn)
+    team = Team(team_abbrev, team_stats, team_rates, team_rpi_data)
     return team
 
-def initialize_team_stats(team_stats_dict: dict) -> TeamStats:
+def initialize_rpi_data(team_abbrev: str, db_conn: Connection) -> dict:
+    rpi_query = f"SELECT * FROM rpi_data_2025 WHERE team = '{team_abbrev}'"
+    rpi_df = pd.read_sql_query(rpi_query, db_conn)
+    return rpi_df.iloc[0].to_dict()
+
+def initialize_team_rates(team_abbrev: str, db_conn: Connection) -> TeamRates:
+    team_rates_query = f"SELECT * FROM team_rates_2025 WHERE team = '{team_abbrev}'"
+    team_rates_df = pd.read_sql_query(team_rates_query, db_conn)
+    team_rates = TeamRates(team_rates_df)
+    return team_rates
+
+def initialize_team_stats(team_abbrev: str, db_conn: Connection) -> TeamStats:
+    team_query = "SELECT * FROM sim_engine_team_stats_2024 WHERE team = ?"
+    team_stats_df = pd.read_sql_query(team_query, db_conn, params=(team_abbrev,))
+    team_stats_dict = team_stats_df.iloc[0].to_dict()
+
     team_stats = TeamStats()
     team_stats.team = team_stats_dict["team"]
     team_stats.games_played = team_stats_dict["games_played"]
