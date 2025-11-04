@@ -1,6 +1,15 @@
 from nfl_simulation_engine_lite.game_model.prototype_game_model import PrototypeGameModel
 from nfl_simulation_engine_lite.team.team import Team
+from math import exp
 import pandas as pd
+import numpy as np
+
+rpi_params = {
+    "gamma" : 0.06,
+    "multiplier_floor": 0.80,
+    "multiplier_ceiling": 1.20,
+    "hfa_const": 0.08
+}
 
 class GameEngine:
     def __init__(self, home_team: Team, away_team: Team, game_model=PrototypeGameModel()):
@@ -8,6 +17,9 @@ class GameEngine:
         self.away_team = away_team
         self.game_state = self.initialize_game_state()
         self.initialize_game_state()
+        game_model.home_team = home_team
+        game_model.away_team = away_team
+        game_model.strength_data = self.init_team_strength_data()
         self.game_model = game_model
         home_team.setup_stat_distributions(game_model.get_model_code())
         away_team.setup_stat_distributions(game_model.get_model_code())
@@ -24,6 +36,19 @@ class GameEngine:
             "distance": 10,
             "score": {self.home_team.name: 0, self.away_team.name: 0},
             "play_log": [],
+        }
+
+    def init_team_strength_data(self) -> dict:
+        home_z_score = self.home_team.get_rpi_data()["rpi_z_score"]
+        away_z_score = self.away_team.get_rpi_data()["rpi_z_score"]
+        z_diff = home_z_score - away_z_score + rpi_params["hfa_const"]
+        home_multiplier = np.clip(exp(rpi_params["gamma"] * z_diff), rpi_params["multiplier_floor"], rpi_params["multiplier_ceiling"])
+        away_multipler = np.clip(exp(-1 * rpi_params["gamma"] * z_diff), rpi_params["multiplier_floor"], rpi_params["multiplier_ceiling"])
+
+        return {
+            "z_diff": z_diff,
+            "home_multiplier": home_multiplier,
+            "away_multiplier": away_multipler,
         }
     
     def simulate_play(self) -> dict:

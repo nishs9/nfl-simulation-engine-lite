@@ -6,6 +6,8 @@ class AbstractGameModel(ABC):
     def __init__(self, off_weight=0.55):
         self.off_weight = off_weight
         self.def_weight = 1 - off_weight
+        self.home_team = None
+        self.away_team = None
 
     @abstractmethod
     def resolve_play(self, game_state: dict) -> dict:

@@ -8,7 +8,19 @@ class TeamRates:
     def initialize_team_rate_stats(self, total_team_rate_stats: pd.DataFrame) -> dict[str, TeamStats]:
         team_rate_stats = {}
         for __, row in total_team_rate_stats.iterrows():
-            situation_key = f"{row['down']}_{row['distance_category']}_{row['redzone']}"
+            try:
+                down = int(row['down'])
+            except ValueError:
+                down = None
+                
+            distance_category = row['distance_category']
+            
+            try:
+                redzone = int(row['redzone'])
+            except ValueError:
+                redzone = None
+
+            situation_key = f"{down}_{distance_category}_{redzone}"
             curr_situation_stats = self.init_situation_team_stats(row.to_dict())
             team_rate_stats[situation_key] = curr_situation_stats
         return team_rate_stats
@@ -16,7 +28,8 @@ class TeamRates:
     def get_data_for_situation(self, down: int, distance_category: str, redzone: bool) -> TeamStats:
         situation_key = f"{down}_{distance_category}_{redzone}"
         if situation_key not in self.team_rate_stats:
-            raise ValueError(f"Invalid situation key: {situation_key}")
+            print(f"Invalid situation key: {situation_key}, returning fallback data")
+            return self.team_rate_stats["None_None_None"]
         return self.team_rate_stats[situation_key]
 
     def init_situation_team_stats(self, team_stats_dict: dict) -> TeamStats:

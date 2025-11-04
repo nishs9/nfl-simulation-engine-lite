@@ -18,7 +18,7 @@ class Team:
         self.def_air_yards_allowed_distribution = None
 
     def setup_stat_distributions(self, game_model_str: str) -> None:
-        if game_model_str == "proto":
+        if game_model_str == "proto" or game_model_str == "v2":
             pass
         elif game_model_str == "v1" or game_model_str == "v1a":
             self.off_passing_distribution = self.init_distribution(self.stats.off_pass_yards_per_play_mean, self.stats.off_pass_yards_per_play_variance)
