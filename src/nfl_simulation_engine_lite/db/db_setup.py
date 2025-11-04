@@ -37,7 +37,7 @@ def hydrate_standard_db(pbp_df: pd.DataFrame, season: int, save_raw_data: bool, 
 def hydrate_situational_db(pbp_df: pd.DataFrame, season: int) -> None:
     db_conn = sqlite3.connect("nfl_stats.db")
     downs = [1, 2, 3, 4]
-    distance_categories = ["short", "medasium", "long"]
+    distance_categories = ["short", "medium", "long"]
     redzone_options = [True, False]
 
     # Handle calculating the situation data 

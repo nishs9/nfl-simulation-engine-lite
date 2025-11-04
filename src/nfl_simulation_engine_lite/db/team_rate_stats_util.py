@@ -1,6 +1,6 @@
 import pandas as pd
 import datetime
-import team_stats_util as tsu
+import nfl_simulation_engine_lite.db.team_stats_util as tsu
 
 def initialize_team_stats_dict(team_abbrev_list: list[str], down: int, distance_category: str, redzone: bool) -> dict[str, list[any]]:
     team_stats_dict = {}
