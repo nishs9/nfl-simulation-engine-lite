@@ -3,6 +3,7 @@ import pandas as pd
 import sqlite3
 import argparse
 import nfl_simulation_engine_lite.db.team_stats_util as tsu
+import nfl_simulation_engine_lite.db.team_rate_stats_util as team_stats_gen
 import warnings
 
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
@@ -15,7 +16,7 @@ def init_argparser() -> argparse.Namespace:
     parsed_args = parser.parse_args()
     return parsed_args
 
-def hydrate_db(pbp_df: pd.DataFrame, season: int, save_raw_data: bool, filter_data: bool) -> None:
+def hydrate_standard_db(pbp_df: pd.DataFrame, season: int, save_raw_data: bool, filter_data: bool) -> None:
     db_conn = sqlite3.connect("nfl_stats.db")
 
     # Filter the play-by-play data to only include necessary columns
@@ -32,6 +33,29 @@ def hydrate_db(pbp_df: pd.DataFrame, season: int, save_raw_data: bool, filter_da
     setup_sim_engine_team_stats_table(filtered_pbp_data, db_conn)
     db_conn.close()
 
+def hydrate_situational_db(pbp_df: pd.DataFrame, season: int) -> None:
+    db_conn = sqlite3.connect("nfl_stats.db")
+    downs = [1, 2, 3, 4]
+    distance_categories = ["short", "medasium", "long"]
+    redzone_options = [True, False]
+
+    # Handle calculating the situation data 
+    team_rates_df_list = []
+    for down in downs:
+        for distance_category in distance_categories:
+            for redzone in redzone_options:
+                team_rates_df = team_stats_gen.calculate_team_stats(down, distance_category, redzone, pbp_df)
+                team_rates_df_list.append(team_rates_df)
+
+    # Handle calculating combined team rates to act as a fallback
+    total_team_rates_df = team_stats_gen.calculate_team_stats(None, None, None, pbp_df)
+    team_rates_df_list.append(total_team_rates_df)
+
+    # Combine data into a single dataframe and add it to the database
+    team_rates_df = pd.concat(team_rates_df_list)
+    team_rates_df.to_sql(f"team_rates_{season}", db_conn, if_exists='replace', index=True)
+    return team_rates_df
+
 def alt_online_db_hydrate() -> None:
     #base_url_1 = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2024.csv.gz'
     base_url_2 = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz'
@@ -40,18 +64,19 @@ def alt_online_db_hydrate() -> None:
     raw_pbp_data_2 = pd.read_csv(base_url_2, compression='gzip', low_memory=False)
     #raw_pbp_data = pd.concat([raw_pbp_data_1, raw_pbp_data_2])
     regular_season_data = raw_pbp_data_2[raw_pbp_data_2["season_type"] == "REG"]
-    hydrate_db(regular_season_data, 2025, False, False)
+    hydrate_standard_db(regular_season_data, 2025, False, False)
+    hydrate_situational_db(regular_season_data, 2025)
 
 def hydrate_db_online(season: int, save_raw_data: bool, filter_data: bool) -> None:
     base_url = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_' + str(season) + '.csv.gz'
     raw_pbp_data = pd.read_csv(base_url, compression='gzip', low_memory=False)
     regular_season_data = raw_pbp_data[raw_pbp_data["season_type"] == "REG"]
-    hydrate_db(regular_season_data, season, save_raw_data, filter_data)
+    hydrate_standard_db(regular_season_data, season, save_raw_data, filter_data)
 
 def hydrate_db_local(season: int, save_raw_data: bool, filter_data: bool) -> None:
     try:
         raw_pbp_data = pd.read_csv(f"input/play_by_play_{season}.csv")
-        hydrate_db(raw_pbp_data, season, save_raw_data, filter_data)
+        hydrate_standard_db(raw_pbp_data, season, save_raw_data, filter_data)
     except FileNotFoundError as err:
         print("Local play-by-play data file not found. Please download the data from nflverse on GitHub and put it in the data folder.")
         print(err.strerror + ": " + err.filename)
@@ -192,9 +217,10 @@ def setup_sim_engine_team_stats_table(raw_pbp_df: pd.DataFrame, db_conn: sqlite3
 
 if __name__ == "__main__":
     print("Running NFL Sim Engine Lite DB Setup Script")
-    #args = init_argparser()
-    alt_online_db_hydrate()
-    # if args.local:
-    #     hydrate_db_local(2024, args.save_raw_pbp, args.filter_pbp)
-    # else:
-    #     hydrate_db_online(2024, args.save_raw_pbp, args.filter_pbp)
+    args = init_argparser()
+    if args.local:
+        print("Running local DB hydration flow")
+        hydrate_db_local(2024, args.save_raw_pbp, args.filter_pbp)
+    else:
+        print("Running online DB hydration flow")
+        alt_online_db_hydrate()
