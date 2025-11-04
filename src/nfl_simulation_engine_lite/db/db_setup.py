@@ -4,6 +4,7 @@ import sqlite3
 import argparse
 import nfl_simulation_engine_lite.db.team_stats_util as tsu
 import nfl_simulation_engine_lite.db.team_rate_stats_util as team_stats_gen
+import nfl_simulation_engine_lite.db.rpi_util as rpi_util
 import warnings
 
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
@@ -54,7 +55,16 @@ def hydrate_situational_db(pbp_df: pd.DataFrame, season: int) -> None:
     # Combine data into a single dataframe and add it to the database
     team_rates_df = pd.concat(team_rates_df_list)
     team_rates_df.to_sql(f"team_rates_{season}", db_conn, if_exists='replace', index=True)
-    return team_rates_df
+    db_conn.close()
+
+def hydrate_rpi_db(season: int) -> None:
+    db_conn = sqlite3.connect("nfl_stats.db")
+    # TODO: Replace with automatic download from NFLverse data repo
+    schedule_df = pd.read_csv(f"input/games.csv")
+    filtered_sched_df = schedule_df[(schedule_df["season"] == season) & (schedule_df["week"] <= 8)]
+    rpi_df = rpi_util.compute_rpi_from_schedule(filtered_sched_df)
+    rpi_df.to_sql(f"rpi_data_{season}", db_conn, if_exists='replace', index=True)
+    db_conn.close()
 
 def alt_online_db_hydrate() -> None:
     #base_url_1 = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2024.csv.gz'
@@ -66,6 +76,7 @@ def alt_online_db_hydrate() -> None:
     regular_season_data = raw_pbp_data_2[raw_pbp_data_2["season_type"] == "REG"]
     hydrate_standard_db(regular_season_data, 2025, False, False)
     hydrate_situational_db(regular_season_data, 2025)
+    hydrate_rpi_db(2025)
 
 def hydrate_db_online(season: int, save_raw_data: bool, filter_data: bool) -> None:
     base_url = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_' + str(season) + '.csv.gz'
