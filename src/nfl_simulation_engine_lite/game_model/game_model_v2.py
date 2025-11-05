@@ -2,16 +2,43 @@ from nfl_simulation_engine_lite.game_model.game_model import AbstractGameModel
 from nfl_simulation_engine_lite.team.team import Team
 from nfl_simulation_engine_lite.team.team_rates import TeamRates
 from nfl_simulation_engine_lite.fourth_down_models.models import v2a_fdm
+from math import exp
 import random
 import pandas as pd
 import numpy as np
 
+rpi_params = {
+    "gamma" : 0.06,
+    "multiplier_floor": 0.80,
+    "multiplier_ceiling": 1.20,
+    "hfa_const": 0.08
+}
+
 class GameModel_V2(AbstractGameModel):
-    def __init__(self, off_weight=0.525):
+    def __init__(self, off_weight=0.525, rpi_enabled=True):
         self.strength_data = None
         self.fourth_down_model = v2a_fdm
         self.fourth_down_model_column_mapping = { 0: "goforit", 1: "field_goal", 2: "punt" }
         super().__init__(off_weight)
+
+    def init_team_strength_data(self, rpi_enabled: bool) -> dict:
+        if rpi_enabled:
+            home_z_score = self.get_home_team().get_rpi_data()["rpi_z_score"]
+            away_z_score = self.get_away_team().get_rpi_data()["rpi_z_score"]
+            z_diff = home_z_score - away_z_score + rpi_params["hfa_const"]
+            home_multiplier = np.clip(exp(rpi_params["gamma"] * z_diff), rpi_params["multiplier_floor"], rpi_params["multiplier_ceiling"])
+            away_multipler = np.clip(exp(-1 * rpi_params["gamma"] * z_diff), rpi_params["multiplier_floor"], rpi_params["multiplier_ceiling"])
+
+            self.strength_data = {
+                "z_diff": z_diff,
+                "home_multiplier": home_multiplier,
+                "away_multiplier": away_multipler,
+            }
+        else:
+            self.strength_data = {
+                "home_multiplier": 1.0,
+                "away_multiplier": 1.0,
+            }
 
     def get_model_code(self) -> str:
         return "v2"

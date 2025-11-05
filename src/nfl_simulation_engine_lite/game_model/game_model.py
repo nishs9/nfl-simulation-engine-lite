@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from nfl_simulation_engine_lite.team.team import Team
 from functools import lru_cache
 
 class AbstractGameModel(ABC):
@@ -16,3 +17,15 @@ class AbstractGameModel(ABC):
     @lru_cache(maxsize=1000)
     def get_weighted_average(self, off_stat: float, def_stat: float) -> float:
         return (off_stat * self.off_weight) + (def_stat * self.def_weight)
+
+    def set_home_team(self, home_team: Team) -> None:
+        self.home_team = home_team
+
+    def get_home_team(self) -> Team:
+        return self.home_team
+
+    def set_away_team(self, away_team: Team) -> None:
+        self.away_team = away_team
+
+    def get_away_team(self) -> Team:
+        return self.away_team

@@ -1,15 +1,15 @@
-Matchup,Prototype,V1,V1a,V1b
-BAL v MIA,BAL wins by 13.65,BAL wins by 7.02,BAL wins by 7.56,BAL wins by 7.98
-ATL v NE,ATL wins by 2.31,ATL wins by 3.24,ATL wins by 3.7,ATL wins by 2.04
-CHI v CIN,CIN wins by 3.99,CIN wins by 5.69,CIN wins by 6.46,CIN wins by 4.8
-MIN v DET,DET wins by 0.77,DET wins by 3.22,DET wins by 3.33,DET wins by 2.02
-CAR v GB,GB wins by 11.38,GB wins by 8.92,GB wins by 9.84,GB wins by 8.79
-LAC v TEN,LAC wins by 11.47,LAC wins by 6.29,LAC wins by 6.27,LAC wins by 6.59
-SF v NYG,SF wins by 5.07,SF wins by 6.1,SF wins by 7.13,SF wins by 4.91
-IND v PIT,PIT wins by 6.09,PIT wins by 2.41,PIT wins by 2.59,PIT wins by 2.6
-DEN v HOU,DEN wins by 0.73,DEN wins by 1.13,DEN wins by 1.34,DEN wins by 4.23
-JAX v LV,JAX wins by 0.25,JAX wins by 0.67,JAX wins by 0.74,LV wins by 0.25
-NO v LA,LA wins by 0.62,LA wins by 1.15,LA wins by 1.11,LA wins by 0.28
-KC v BUF,BUF wins by 9.31,BUF wins by 5.17,BUF wins by 5.68,BUF wins by 5.86
-SEA v WAS,WAS wins by 1.2,WAS wins by 3.22,WAS wins by 3.76,WAS wins by 7.35
-ARI v DAL,ARI wins by 8.39,ARI wins by 6.04,ARI wins by 6.25,ARI wins by 6.38
+Matchup,Prototype,V1,V1a,V1b,V2
+LV v DEN,DEN wins by 9.6,DEN wins by 5.2,DEN wins by 2.1,DEN wins by 5.0,LV wins by 1.4
+ATL v IND,IND wins by 15.7,IND wins by 8.9,IND wins by 4.0,IND wins by 14.6,IND wins by 7.6
+NYG v CHI,CHI wins by 21.8,CHI wins by 5.3,CHI wins by 7.7,CHI wins by 11.8,CHI wins by 10.3
+BUF v MIA,BUF wins by 18.8,BUF wins by 6.0,BUF wins by 3.8,BUF wins by 3.2,BUF wins by 3.1
+BAL v MIN,BAL wins by 0.4,BAL wins by 4.5,BAL wins by 1.7,BAL wins by 0.4,MIN wins by 34.6
+CLE v NYJ,CLE wins by 6.9,CLE wins by 1.9,NYJ wins by 0.9,NYJ wins by 2.2,CLE wins by 1.4
+NE v TB,TB wins by 4.7,TB wins by 1.3,NE wins by 1.8,TB wins by 6.7,TB wins by 2.1
+NO v CAR,NO wins by 2.9,CAR wins by 10.2,CAR wins by 0.6,NO wins by 4.3,NO wins by 1.3
+JAX v HOU,HOU wins by 2.2,JAX wins by 0.5,JAX wins by 3.8,HOU wins by 7.5,JAX wins by 0.7
+ARI v SEA,ARI wins by 3.4,SEA wins by 7.8,SEA wins by 2.2,SEA wins by 9.8,SEA and ARI tie
+LA v SF,LA wins by 7.8,LA wins by 11.6,LA wins by 6.9,LA wins by 11.8,SF wins by 1.4
+DET v WAS,DET wins by 5.2,DET wins by 13.6,DET wins by 14.0,DET wins by 6.3,DET wins by 2.1
+PIT v LAC,PIT wins by 9.6,PIT wins by 0.3,PIT wins by 2.1,LAC wins by 3.5,PIT wins by 4.9
+PHI v GB,PHI wins by 0.1,PHI wins by 5.0,PHI wins by 11.0,PHI wins by 4.4,PHI wins by 1.9
