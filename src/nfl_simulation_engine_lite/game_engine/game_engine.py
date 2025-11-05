@@ -16,7 +16,7 @@ class GameEngine:
         self.game_state = self.initialize_game_state()
 
     def initialize_game_state(self) -> dict:
-        if (self.game_model.get_model_code() == "v2"):
+        if (self.game_model.get_model_code().startswith("v2")):
             self.game_model.init_team_strength_data(rpi_enabled=True)
 
         return {

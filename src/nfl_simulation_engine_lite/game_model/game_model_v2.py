@@ -7,27 +7,30 @@ import random
 import pandas as pd
 import numpy as np
 
-rpi_params = {
-    "gamma" : 0.06,
-    "multiplier_floor": 0.80,
-    "multiplier_ceiling": 1.20,
-    "hfa_const": 0.08
-}
-
 class GameModel_V2(AbstractGameModel):
     def __init__(self, off_weight=0.525, rpi_enabled=True):
         self.strength_data = None
         self.fourth_down_model = v2a_fdm
         self.fourth_down_model_column_mapping = { 0: "goforit", 1: "field_goal", 2: "punt" }
+        self.rpi_params = self.init_rpi_params()
         super().__init__(off_weight)
+
+    def init_rpi_params(self, hfa_const: float = 0.08) -> dict:
+        rpi_params = {
+            "gamma" : 0.06,
+            "multiplier_floor": 0.80,
+            "multiplier_ceiling": 1.20,
+            "hfa_const": hfa_const
+        }
+        return rpi_params
 
     def init_team_strength_data(self, rpi_enabled: bool) -> dict:
         if rpi_enabled:
             home_z_score = self.get_home_team().get_rpi_data()["rpi_z_score"]
             away_z_score = self.get_away_team().get_rpi_data()["rpi_z_score"]
-            z_diff = home_z_score - away_z_score + rpi_params["hfa_const"]
-            home_multiplier = np.clip(exp(rpi_params["gamma"] * z_diff), rpi_params["multiplier_floor"], rpi_params["multiplier_ceiling"])
-            away_multipler = np.clip(exp(-1 * rpi_params["gamma"] * z_diff), rpi_params["multiplier_floor"], rpi_params["multiplier_ceiling"])
+            z_diff = home_z_score - away_z_score + self.rpi_params["hfa_const"]
+            home_multiplier = np.clip(exp(self.rpi_params["gamma"] * z_diff), self.rpi_params["multiplier_floor"], self.rpi_params["multiplier_ceiling"])
+            away_multipler = np.clip(exp(-1 * self.rpi_params["gamma"] * z_diff), self.rpi_params["multiplier_floor"], self.rpi_params["multiplier_ceiling"])
 
             self.strength_data = {
                 "z_diff": z_diff,
