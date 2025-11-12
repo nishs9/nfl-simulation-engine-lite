@@ -58,10 +58,11 @@ def hydrate_situational_db(pbp_df: pd.DataFrame, season: int) -> None:
     db_conn.close()
 
 def hydrate_rpi_db(season: int) -> None:
+    base_url = 'https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv.gz'
     db_conn = sqlite3.connect("nfl_stats.db")
-    # TODO: Replace with automatic download from NFLverse data repo
-    schedule_df = pd.read_csv(f"input/games.csv")
-    filtered_sched_df = schedule_df[(schedule_df["season"] == season) & (schedule_df["week"] <= 8)]
+    schedule_df = pd.read_csv(base_url, compression='gzip', low_memory=False)
+    # Filter out games that haven't happened yet
+    filtered_sched_df = schedule_df[(schedule_df["season"] == season) & ~(schedule_df['home_score'].isna())]
     rpi_df = rpi_util.compute_rpi_from_schedule(filtered_sched_df)
     rpi_df.to_sql(f"rpi_data_{season}", db_conn, if_exists='replace', index=True)
     db_conn.close()

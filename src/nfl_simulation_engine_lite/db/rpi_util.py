@@ -43,14 +43,26 @@ def compute_rpi_from_schedule(schedule_df: pd.DataFrame) -> pd.DataFrame:
             if len(opp_games) > 0:
                 opp_wp = smoothed_win_pct(opp_games['win'].sum(), len(opp_games))
                 opp_wp_values.append(opp_wp)
-        team_owp[team] = np.mean(opp_wp_values) if opp_wp_values else 0.5
+        owp = None
+        if len(opp_wp_values) == 0:
+            print(f"No OWP values found for team {team}")
+            owp = 0.5
+        else:
+            owp = np.mean(opp_wp_values)
+        team_owp[team] = owp
 
     # ---- Compute OOWP (opp of opp win%) ----
     team_oowp = {}
     for team in teams:
         opps = games_df.loc[games_df['team'] == team, 'opp'].unique()
         owp_vals = [team_owp.get(o, 0.5) for o in opps]
-        team_oowp[team] = np.mean(owp_vals) if owp_vals else 0.5
+        oowp = None
+        if len(owp_vals) == 0:
+            print(f"No OWP values found for team {team}")
+            oowp = 0.5
+        else:
+            oowp = np.mean(owp_vals)
+        team_oowp[team] = oowp
 
     # ---- Final RPI formula ----
     for team in teams:
