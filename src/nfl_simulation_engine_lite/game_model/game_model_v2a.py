@@ -17,9 +17,15 @@ class GameModel_V2a(GameModel_V2):
 
         raw_off_yards_per_play = 0
         if play_type == "pass":
-            raw_off_yards_per_play = team_rates_data.yards_per_completion if pd.notna(team_rates_data.yards_per_completion) else fallback_team_rates_data.yards_per_completion
+            if (pd.notna(team_rates_data.yards_per_completion)):
+                raw_off_yards_per_play = (team_rates_data.yards_per_completion + fallback_team_rates_data.yards_per_completion) / 2
+            else:
+                raw_off_yards_per_play = fallback_team_rates_data.yards_per_completion
         else:
-            raw_off_yards_per_play = team_rates_data.rush_yards_per_carry if pd.notna(team_rates_data.rush_yards_per_carry) else fallback_team_rates_data.rush_yards_per_carry
+            if (pd.notna(team_rates_data.rush_yards_per_carry)):
+                raw_off_yards_per_play = (team_rates_data.rush_yards_per_carry + fallback_team_rates_data.rush_yards_per_carry) / 2
+            else:
+                raw_off_yards_per_play = fallback_team_rates_data.rush_yards_per_carry
 
         return self._bias_off_value(raw_off_yards_per_play, posteam)
 

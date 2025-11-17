@@ -7,16 +7,13 @@ from nfl_simulation_engine_lite.game_engine.game_engine import GameEngine
 from nfl_simulation_engine_lite.team.team import Team
 from time import time
 from tqdm import tqdm
-import csv
 import math
 import os
 import pandas as pd
 import random
-import requests
 import nfl_simulation_engine_lite.team.team_factory as TeamFactory
 import nfl_simulation_engine_lite.utils.play_log_util as plu
 import warnings
-import re
 
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
