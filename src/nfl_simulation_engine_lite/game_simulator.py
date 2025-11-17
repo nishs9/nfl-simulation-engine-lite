@@ -16,6 +16,7 @@ import requests
 import nfl_simulation_engine_lite.team.team_factory as TeamFactory
 import nfl_simulation_engine_lite.utils.play_log_util as plu
 import warnings
+import re
 
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -82,6 +83,96 @@ def read_matchup_column(file_path):
         print(f"An unexpected error occurred: {e}")
 
     return matchups
+
+def extract_team_abbrev(team_string):
+    match = re.match(r'(\S+)\s\S+\s(\S+)', team_string)
+    if match:
+        return match.groups()
+    else:
+        print("The following game string is in an invalid format:")
+        print(team_string)
+
+def generate_weekly_prediction_input_file(week: int) -> None:
+    url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week={week}"
+    response = requests.get(url)
+    data = response.json()
+    matchup_records = []
+    for game in data['events']:
+        print(f"Processing game: {game['shortName']}")
+        team_abbrevs = extract_team_abbrev(game['shortName'])
+        home_team_abbrev = team_abbrevs[1]
+        if home_team_abbrev == 'LAR':
+            home_team_abbrev = 'LA'
+        away_team_abbrev = team_abbrevs[0]
+        if away_team_abbrev == 'LAR':
+            away_team_abbrev = 'LA'
+        game_date = game['date']
+        matchup_record = {
+            "home_team_abbrev": home_team_abbrev,
+            "away_team_abbrev": away_team_abbrev,
+            "game_date": game_date
+        }
+        matchup_records.append(matchup_record)
+    
+    game_df = pd.DataFrame(matchup_records)
+    game_df.sort_values(by='game_date', inplace=True)
+    game_df.reset_index(drop=True, inplace=True)
+
+    with open('input.txt', 'w') as input_file:
+        for __, row in game_df.iterrows():
+            home_team_abbrev = row['home_team_abbrev']
+            away_team_abbrev = row['away_team_abbrev']
+            input_file.write(f"{away_team_abbrev} v {home_team_abbrev}\n")
+    print(f"Weekly prediction input file has been generated for week {week}.")
+
+def fetch_scores_for_week(week: int) -> None:
+    url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week={week}"
+    response = requests.get(url)
+    data = response.json()
+    score_records = []
+    for game in data['events']:
+        game_state = game['status']['type']['state']
+        if game_state != 'post':
+            # Only process completed games
+            continue
+        print(f"Processing game: {game['shortName']}")
+        team_abbrevs = extract_team_abbrev(game['shortName'])
+        home_team_abbrev = team_abbrevs[1]
+        if home_team_abbrev == 'LAR':
+            home_team_abbrev = 'LA'
+        away_team_abbrev = team_abbrevs[0]
+        if away_team_abbrev == 'LAR':
+            away_team_abbrev = 'LA'
+        game_date = game['date']
+        home_score = game['competitions'][0]['competitors'][0]['score']
+        away_score = game['competitions'][0]['competitors'][1]['score']
+        print(f"Home team: {home_team_abbrev} {home_score}, Away team: {away_team_abbrev} {away_score}")
+        score_record = {
+            "home_team_abbrev": home_team_abbrev,
+            "away_team_abbrev": away_team_abbrev,
+            "game_date": game_date,
+            "home_score": home_score,
+            "away_score": away_score
+        }
+        score_records.append(score_record)
+    score_df = pd.DataFrame(score_records)
+    score_df.sort_values(by='game_date', inplace=True)
+    score_df.reset_index(drop=True, inplace=True)
+    with open(f'scores_{week}.txt', 'w') as scores_file:
+        for __, row in score_df.iterrows():
+            home_team_abbrev = row['home_team_abbrev']
+            away_team_abbrev = row['away_team_abbrev']
+            home_score = int(row['home_score'])
+            away_score = int(row['away_score'])
+            if home_score > away_score:
+                score_diff = home_score - away_score
+                scores_file.write(f"{home_team_abbrev} wins by {score_diff}\n")
+            elif home_score < away_score:
+                score_diff = away_score - home_score
+                scores_file.write(f"{away_team_abbrev} wins by {score_diff}\n")
+            else:
+                scores_file.write(f"{home_team_abbrev} and {away_team_abbrev} tie\n")
+    print(f"Scores for week {week} have been written to 'test_scores.txt'.")
 
 def run_weekly_predictions(num_simulations=3000, num_workers=None):
     prediction_run_start = time()
@@ -350,7 +441,9 @@ if __name__ == "__main__":
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     exec_start = time()
-    run_weekly_predictions(num_simulations=4000, num_workers=5)
+    fetch_scores_for_week(11)
+    generate_weekly_prediction_input_file(12)
+    #run_weekly_predictions(num_simulations=4000, num_workers=5)
     #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2a"), num_workers=3)
     #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2"), num_workers=3)
     exec_end = time()
