@@ -14,6 +14,9 @@ import random
 import nfl_simulation_engine_lite.team.team_factory as TeamFactory
 import nfl_simulation_engine_lite.utils.play_log_util as plu
 import warnings
+import requests
+import re
+import csv
 
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)

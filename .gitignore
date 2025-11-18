@@ -181,3 +181,5 @@ src/nfl_simulation_engine_lite/db/input/*.csv
 cursor/
 
 *bak*.db
+
+implementation_details.md
