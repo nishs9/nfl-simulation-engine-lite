@@ -4,6 +4,9 @@ from nfl_simulation_engine_lite.game_model.prototype_game_model import Prototype
 from nfl_simulation_engine_lite.game_model.game_model_v1 import GameModel_V1
 from nfl_simulation_engine_lite.game_model.game_model_v1a import GameModel_V1a
 from nfl_simulation_engine_lite.game_model.game_model_v1b import GameModel_V1b
+from nfl_simulation_engine_lite.game_model.game_model_v2 import GameModel_V2
+from nfl_simulation_engine_lite.game_model.game_model_v2a import GameModel_V2a
+from nfl_simulation_engine_lite.game_model.game_model_v2b import GameModel_V2b
 from nfl_simulation_engine_lite.team.team import Team
 from typing import Tuple
 import nfl_simulation_engine_lite.team.team_factory as team_factory
@@ -293,6 +296,170 @@ class TestGameSimulator:
         except Exception as e:
             pytest.fail("Single game simulation failed due to an unexpected exception: " + str(e))
 
+    def test_single_game_simulation_with_V2_model(self):
+        try:
+            home_team_abbrev, away_team_abbrev = self.get_random_teams()
+            home_team, away_team = self.init_teams_for_test(home_team_abbrev, away_team_abbrev)
+            game_engine = GameEngine(home_team, away_team, game_model=GameModel_V2())
+            game_summary = game_engine.run_simulation(test_mode=True)
+
+            # Verify that the team objects are being instantiated only with necessary
+            # attributes for the v1b model
+            assert home_team.off_passing_distribution is None
+
+            assert home_team.off_air_yards_distribution is None
+
+            assert home_team.def_air_yards_allowed_distribution is None
+
+            assert home_team.off_rushing_distribution is None
+
+            assert home_team.def_rushing_distribution is None
+            
+            assert home_team.team_rates is not None
+            assert home_team.team_rates.get_data_for_situation(None, None, None) is not None 
+
+            assert away_team.off_passing_distribution is None
+
+            assert away_team.def_passing_distribution is None
+
+            assert away_team.off_air_yards_distribution is None
+
+            assert away_team.def_air_yards_allowed_distribution is None
+
+            assert away_team.off_rushing_distribution is None
+
+            assert away_team.def_rushing_distribution is None
+
+            assert away_team.team_rates is not None
+            assert away_team.team_rates.get_data_for_situation(None, None, None) is not None 
+
+
+            assert game_engine.game_state is not None
+            assert game_engine.game_state["quarter"] == 4
+            assert game_engine.game_state["game_seconds_remaining"] <= 0
+            assert game_engine.game_state["quarter_seconds_remaining"] <= 0
+
+            assert game_summary is not None
+            assert game_summary["final_score"][home_team.name] >= 0
+            assert game_summary["final_score"][away_team.name] >= 0
+            assert game_summary["num_plays_in_game"] > 0
+            assert len(game_summary["play_log"]) == game_summary["num_plays_in_game"]
+        except Exception as e:
+            pytest.fail("Single game simulation failed due to an unexpected exception: " + str(e))
+
+    def test_single_game_simulation_with_V2a_model(self):
+        try:
+            home_team_abbrev, away_team_abbrev = self.get_random_teams()
+            home_team, away_team = self.init_teams_for_test(home_team_abbrev, away_team_abbrev)
+            game_engine = GameEngine(home_team, away_team, game_model=GameModel_V2a())
+            game_summary = game_engine.run_simulation(test_mode=True)
+
+            # Verify that the team objects are being instantiated only with necessary
+            # attributes for the v1b model
+            assert home_team.off_passing_distribution is None
+
+            assert home_team.off_air_yards_distribution is None
+
+            assert home_team.def_air_yards_allowed_distribution is None
+
+            assert home_team.off_rushing_distribution is None
+
+            assert home_team.def_rushing_distribution is None
+            
+            assert home_team.stats is not None
+            assert home_team.team_rates is not None
+            assert home_team.team_rates.get_data_for_situation(None, None, None) is not None 
+
+            assert away_team.off_passing_distribution is None
+
+            assert away_team.def_passing_distribution is None
+
+            assert away_team.off_air_yards_distribution is None
+
+            assert away_team.def_air_yards_allowed_distribution is None
+
+            assert away_team.off_rushing_distribution is None
+
+            assert away_team.def_rushing_distribution is None
+
+            assert away_team.stats is not None
+            assert away_team.team_rates is not None
+            assert away_team.team_rates.get_data_for_situation(None, None, None) is not None 
+
+
+            assert game_engine.game_state is not None
+            assert game_engine.game_state["quarter"] == 4
+            assert game_engine.game_state["game_seconds_remaining"] <= 0
+            assert game_engine.game_state["quarter_seconds_remaining"] <= 0
+
+            assert game_summary is not None
+            assert game_summary["final_score"][home_team.name] >= 0
+            assert game_summary["final_score"][away_team.name] >= 0
+            assert game_summary["num_plays_in_game"] > 0
+            assert len(game_summary["play_log"]) == game_summary["num_plays_in_game"]
+        except Exception as e:
+            pytest.fail("Single game simulation failed due to an unexpected exception: " + str(e))
+
+    def test_single_game_simulation_with_V2b_model(self):
+        try:
+            home_team_abbrev, away_team_abbrev = self.get_random_teams()
+            home_team, away_team = self.init_teams_for_test(home_team_abbrev, away_team_abbrev)
+            game_engine = GameEngine(home_team, away_team, game_model=GameModel_V2b())
+            game_summary = game_engine.run_simulation(test_mode=True)
+
+            # Verify that the team objects are being instantiated only with necessary
+            # attributes for the V1a model
+            assert home_team.stats is not None
+
+            assert home_team.rpi_data is not None
+
+            assert home_team.team_rates is not None
+            assert home_team.team_rates.get_data_for_situation(None, None, None) is not None 
+
+            assert home_team.off_passing_distribution is not None
+            assert home_team.off_passing_distribution.rvs() >= 0
+
+            assert home_team.off_rushing_distribution is not None
+            assert home_team.off_rushing_distribution.rvs() >= 0
+
+            assert home_team.def_passing_distribution is not None
+            assert home_team.def_passing_distribution.rvs() >= 0
+
+            assert home_team.def_rushing_distribution is not None
+            assert home_team.def_rushing_distribution.rvs() >= 0
+
+            assert away_team.stats is not None
+
+            assert away_team.rpi_data is not None
+
+            assert away_team.team_rates is not None
+            assert away_team.team_rates.get_data_for_situation(None, None, None) is not None 
+
+            assert away_team.off_passing_distribution is not None
+            assert away_team.off_passing_distribution.rvs() >= 0
+
+            assert away_team.off_rushing_distribution is not None
+            assert away_team.off_rushing_distribution.rvs() >= 0
+
+            assert away_team.def_passing_distribution is not None
+            assert away_team.def_passing_distribution.rvs() >= 0
+
+            assert away_team.def_rushing_distribution is not None
+            assert away_team.def_rushing_distribution.rvs() >= 0
+
+            assert game_engine.game_state is not None
+            assert game_engine.game_state["quarter"] == 4
+            assert game_engine.game_state["game_seconds_remaining"] <= 0
+            assert game_engine.game_state["quarter_seconds_remaining"] <= 0
+
+            assert game_summary is not None
+            assert game_summary["final_score"][home_team.name] >= 0
+            assert game_summary["final_score"][away_team.name] >= 0
+            assert game_summary["num_plays_in_game"] > 0
+            assert len(game_summary["play_log"]) == game_summary["num_plays_in_game"]
+        except Exception as e:
+            pytest.fail("Single game simulation failed due to an unexpected exception: " + str(e))
+
     ###########################################################################################
     # Helper functions
     @staticmethod
@@ -311,7 +478,3 @@ class TestGameSimulator:
         away_team = team_factory.initialize_team(away_team_abbrev, test_db_conn)
         test_db_conn.close()
         return home_team, away_team
-    
-    # @staticmethod
-    # def get_test_db_conn() -> sqlite3.Connection:
-    #     return sqlite3.connect("test_nfl_stats.db") 
