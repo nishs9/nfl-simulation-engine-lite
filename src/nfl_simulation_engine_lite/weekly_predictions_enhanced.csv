@@ -1,16 +1,15 @@
-Matchup,Prototype,Prototype_WP,V1,V1_WP,V1a,V1a_WP,V1b,V1b_WP,V2,V2_WP,V2a,V2a_WP
-NYJ v NE,NE wins by 9.21,NE WP%: 74.35,NE wins by 4.73,NE WP%: 61.35,NE wins by 4.89,NE WP%: 61.88,NE wins by 5.14,NE WP%: 62.2,NE wins by 7.53,NE WP%: 77.8,NE wins by 1.62,NE WP%: 39.52
-CAR v ATL,ATL wins by 6.48,ATL WP%: 66.5,ATL wins by 3.58,ATL WP%: 56.8,ATL wins by 3.48,ATL WP%: 58.45,ATL wins by 4.14,ATL WP%: 59.15,CAR wins by 3.04,ATL WP%: 34.92,ATL wins by 0.6,ATL WP%: 44.2
-WAS v MIA,MIA wins by 1.16,MIA WP%: 50.78,MIA wins by 0.27,MIA WP%: 48.18,MIA wins by 0.48,MIA WP%: 49.62,MIA wins by 1.85,MIA WP%: 52.18,MIA wins by 3.89,MIA WP%: 53.2,MIA wins by 3.06,MIA WP%: 46.62
-TB v BUF,TB wins by 1.65,BUF WP%: 43.6,BUF wins by 0.67,BUF WP%: 48.77,BUF wins by 0.73,BUF WP%: 49.28,TB wins by 1.23,BUF WP%: 44.45,TB wins by 6.07,BUF WP%: 21.98,BUF wins by 0.15,BUF WP%: 35.08
-HOU v TEN,HOU wins by 13.14,TEN WP%: 15.15,HOU wins by 10.43,TEN WP%: 17.47,HOU wins by 10.97,TEN WP%: 15.97,HOU wins by 11.63,TEN WP%: 18.45,HOU wins by 5.23,TEN WP%: 20.85,HOU wins by 5.57,TEN WP%: 21.35
-CHI v MIN,CHI wins by 9.79,MIN WP%: 23.38,CHI wins by 5.3,MIN WP%: 31.55,CHI wins by 5.97,MIN WP%: 31.4,CHI wins by 4.85,MIN WP%: 34.83,CHI wins by 3.6,MIN WP%: 28.32,CHI wins by 3.69,MIN WP%: 25.1
-GB v NYG,GB wins by 3.79,NYG WP%: 36.75,GB wins by 4.96,NYG WP%: 30.73,GB wins by 5.46,NYG WP%: 30.5,GB wins by 5.68,NYG WP%: 31.57,NYG wins by 2.59,NYG WP%: 42.77,NYG wins by 0.59,NYG WP%: 31.42
-CIN v PIT,PIT wins by 10.79,PIT WP%: 75.4,PIT wins by 6.14,PIT WP%: 65.2,PIT wins by 6.78,PIT WP%: 67.15,PIT wins by 9.7,PIT WP%: 73.1,PIT wins by 7.97,PIT WP%: 66.6,PIT wins by 6.61,PIT WP%: 61.02
-LAC v JAX,JAX wins by 1.45,JAX WP%: 52.4,LAC wins by 1.91,JAX WP%: 41.05,LAC wins by 1.86,JAX WP%: 41.52,LAC wins by 1.75,JAX WP%: 42.58,JAX wins by 1.63,JAX WP%: 40.77,JAX wins by 1.7,JAX WP%: 41.68
-SEA v LA,LA wins by 2.26,LA WP%: 54.43,SEA wins by 0.28,LA WP%: 45.32,LA wins by 0.13,LA WP%: 48.9,LA wins by 2.0,LA WP%: 53.73,SEA wins by 5.58,LA WP%: 20.8,SEA wins by 0.38,LA WP%: 36.85
-SF v ARI,ARI wins by 6.03,ARI WP%: 64.35,ARI wins by 1.14,ARI WP%: 51.1,ARI wins by 1.12,ARI WP%: 50.85,ARI wins by 2.61,ARI WP%: 54.62,SF wins by 2.01,ARI WP%: 30.65,ARI wins by 1.77,ARI WP%: 40.35
-BAL v CLE,BAL wins by 2.76,CLE WP%: 39.62,BAL wins by 3.53,CLE WP%: 34.95,BAL wins by 3.97,CLE WP%: 34.88,BAL wins by 1.65,CLE WP%: 42.43,CLE wins by 0.42,CLE WP%: 38.38,CLE wins by 1.16,CLE WP%: 39.32
-KC v DEN,DEN wins by 0.62,DEN WP%: 50.52,DEN wins by 1.21,DEN WP%: 50.28,DEN wins by 2.08,DEN WP%: 55.47,DEN wins by 4.54,DEN WP%: 60.82,KC wins by 1.0,DEN WP%: 28.12,KC wins by 0.52,DEN WP%: 30.43
-DET v PHI,DET wins by 3.14,PHI WP%: 37.2,DET wins by 3.87,PHI WP%: 34.02,DET wins by 4.0,PHI WP%: 35.1,DET wins by 4.24,PHI WP%: 34.77,DET wins by 2.06,PHI WP%: 26.5,DET wins by 1.23,PHI WP%: 27.88
-DAL v LV,DAL wins by 2.97,LV WP%: 39.4,DAL wins by 3.58,LV WP%: 36.02,DAL wins by 3.94,LV WP%: 36.15,DAL wins by 4.02,LV WP%: 36.58,DAL wins by 2.59,LV WP%: 26.38,DAL wins by 2.89,LV WP%: 23.38
+Matchup,Prototype,Prototype_WP,V1,V1_WP,V1a,V1a_WP,V1b,V1b_WP,V2,V2_WP,V2a,V2a_WP,V2b,V2b_WP
+BUF v HOU,HOU wins by 1.18,HOU WP%: 51.33,BUF wins by 0.74,HOU WP%: 44.87,BUF wins by 0.4,HOU WP%: 45.91,BUF wins by 0.36,HOU WP%: 47.33,HOU wins by 4.11,HOU WP%: 56.13,HOU wins by 2.45,HOU WP%: 44.49,HOU wins by 4.21,HOU WP%: 52.82
+PIT v CHI,CHI wins by 0.82,CHI WP%: 50.67,CHI wins by 0.33,CHI WP%: 47.62,CHI wins by 0.33,CHI WP%: 48.76,PIT wins by 1.59,CHI WP%: 44.11,CHI wins by 4.07,CHI WP%: 50.98,CHI wins by 2.9,CHI WP%: 47.22,CHI wins by 2.75,CHI WP%: 47.71
+NE v CIN,NE wins by 9.2,CIN WP%: 24.53,NE wins by 6.84,CIN WP%: 26.56,NE wins by 7.27,CIN WP%: 27.33,NE wins by 6.33,CIN WP%: 31.62,NE wins by 2.86,CIN WP%: 26.93,NE wins by 2.84,CIN WP%: 25.62,NE wins by 0.67,CIN WP%: 33.93
+NYG v DET,DET wins by 17.4,DET WP%: 89.29,DET wins by 8.96,DET WP%: 74.78,DET wins by 9.29,DET WP%: 75.76,DET wins by 9.08,DET WP%: 71.84,DET wins by 1.96,DET WP%: 36.27,DET wins by 2.18,DET WP%: 41.53,DET wins by 2.29,DET WP%: 44.16
+MIN v GB,GB wins by 7.41,GB WP%: 68.93,GB wins by 5.34,GB WP%: 63.93,GB wins by 5.45,GB WP%: 64.64,GB wins by 4.87,GB WP%: 61.67,MIN wins by 7.06,GB WP%: 16.44,GB wins by 0.52,GB WP%: 36.58,MIN wins by 1.46,GB WP%: 31.07
+SEA v TEN,SEA wins by 10.12,TEN WP%: 20.84,SEA wins by 10.22,TEN WP%: 19.09,SEA wins by 10.4,TEN WP%: 18.33,SEA wins by 8.27,TEN WP%: 25.69,SEA wins by 2.43,TEN WP%: 29.93,TEN wins by 2.11,TEN WP%: 43.58,TEN wins by 3.42,TEN WP%: 52.87
+IND v KC,IND wins by 4.11,KC WP%: 35.47,IND wins by 3.36,KC WP%: 36.51,IND wins by 3.8,KC WP%: 36.58,IND wins by 3.11,KC WP%: 39.98,KC wins by 1.07,KC WP%: 39.31,KC wins by 1.9,KC WP%: 40.73,KC wins by 2.45,KC WP%: 45.16
+NYJ v BAL,BAL wins by 8.46,BAL WP%: 72.67,BAL wins by 4.92,BAL WP%: 62.07,BAL wins by 5.22,BAL WP%: 63.62,BAL wins by 5.66,BAL WP%: 63.49,BAL wins by 0.11,BAL WP%: 36.47,NYJ wins by 1.17,BAL WP%: 27.47,NYJ wins by 1.53,BAL WP%: 27.22
+CLE v LV,CLE wins by 2.01,LV WP%: 41.56,CLE wins by 0.02,LV WP%: 45.82,CLE wins by 0.27,LV WP%: 47.0,CLE wins by 0.32,LV WP%: 47.18,CLE wins by 0.55,LV WP%: 32.4,CLE wins by 1.59,LV WP%: 28.0,CLE wins by 2.71,LV WP%: 26.07
+JAX v ARI,JAX wins by 3.28,ARI WP%: 38.38,JAX wins by 1.5,ARI WP%: 42.0,JAX wins by 1.54,ARI WP%: 43.29,JAX wins by 0.96,ARI WP%: 44.71,ARI wins by 1.96,ARI WP%: 48.16,JAX wins by 2.62,ARI WP%: 24.51,JAX wins by 1.75,ARI WP%: 30.64
+PHI v DAL,PHI wins by 4.48,DAL WP%: 34.53,PHI wins by 9.63,DAL WP%: 21.24,PHI wins by 11.13,DAL WP%: 21.71,PHI wins by 10.64,DAL WP%: 24.02,PHI wins by 1.49,DAL WP%: 27.8,PHI wins by 2.13,DAL WP%: 23.76,PHI wins by 1.77,DAL WP%: 29.51
+ATL v NO,ATL wins by 3.81,NO WP%: 36.02,ATL wins by 3.32,NO WP%: 36.71,ATL wins by 3.36,NO WP%: 37.13,ATL wins by 3.31,NO WP%: 39.36,ATL wins by 2.79,NO WP%: 40.8,ATL wins by 3.49,NO WP%: 22.11,ATL wins by 2.91,NO WP%: 27.78
+TB v LA,LA wins by 3.05,LA WP%: 56.64,LA wins by 2.6,LA WP%: 55.13,LA wins by 2.88,LA WP%: 55.84,LA wins by 1.95,LA WP%: 53.13,LA wins by 5.81,LA WP%: 56.89,LA wins by 3.64,LA WP%: 51.07,LA wins by 2.48,LA WP%: 48.56
+CAR v SF,SF wins by 2.98,SF WP%: 55.87,SF wins by 3.81,SF WP%: 58.44,SF wins by 3.81,SF WP%: 59.11,SF wins by 6.97,SF WP%: 67.6,SF wins by 10.65,SF WP%: 73.98,SF wins by 0.53,SF WP%: 35.67,SF wins by 0.59,SF WP%: 38.2
