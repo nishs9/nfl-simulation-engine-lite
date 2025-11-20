@@ -12,7 +12,6 @@ from typing import Tuple
 import nfl_simulation_engine_lite.team.team_factory as team_factory
 import pytest
 import random
-import sqlite3
 
 teams = ["ARI","ATL","BAL","BUF","CAR","CHI","CIN","CLE","DAL",
             "DEN","DET","GB","HOU","IND","JAX","KC","LA","LAC",
