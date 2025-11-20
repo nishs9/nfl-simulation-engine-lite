@@ -7,15 +7,16 @@ from nfl_simulation_engine_lite.game_engine.game_engine import GameEngine
 from nfl_simulation_engine_lite.team.team import Team
 from time import time
 from tqdm import tqdm
-import csv
 import math
 import os
 import pandas as pd
 import random
-import requests
 import nfl_simulation_engine_lite.team.team_factory as TeamFactory
 import nfl_simulation_engine_lite.utils.play_log_util as plu
 import warnings
+import requests
+import re
+import csv
 
 warnings.filterwarnings("ignore", category=pd.errors.SettingWithCopyWarning)
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -83,12 +84,104 @@ def read_matchup_column(file_path):
 
     return matchups
 
-def run_weekly_predictions(num_simulations=3000, num_workers=None):
+def extract_team_abbrev(team_string):
+    match = re.match(r'(\S+)\s\S+\s(\S+)', team_string)
+    if match:
+        return match.groups()
+    else:
+        print("The following game string is in an invalid format:")
+        print(team_string)
+
+def generate_weekly_prediction_input_file(week: int) -> None:
+    url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week={week}"
+    response = requests.get(url)
+    data = response.json()
+    matchup_records = []
+    for game in data['events']:
+        print(f"Processing game: {game['shortName']}")
+        team_abbrevs = extract_team_abbrev(game['shortName'])
+        home_team_abbrev = team_abbrevs[1]
+        if home_team_abbrev == 'LAR':
+            home_team_abbrev = 'LA'
+        away_team_abbrev = team_abbrevs[0]
+        if away_team_abbrev == 'LAR':
+            away_team_abbrev = 'LA'
+        game_date = game['date']
+        matchup_record = {
+            "home_team_abbrev": home_team_abbrev,
+            "away_team_abbrev": away_team_abbrev,
+            "game_date": game_date
+        }
+        matchup_records.append(matchup_record)
+    
+    game_df = pd.DataFrame(matchup_records)
+    game_df.sort_values(by='game_date', inplace=True)
+    game_df.reset_index(drop=True, inplace=True)
+
+    with open(f'input_week_{week}.txt', 'w') as input_file:
+        for __, row in game_df.iterrows():
+            home_team_abbrev = row['home_team_abbrev']
+            away_team_abbrev = row['away_team_abbrev']
+            input_file.write(f"{away_team_abbrev} v {home_team_abbrev}\n")
+    print(f"Weekly prediction input file has been generated for week {week}.")
+
+def fetch_scores_for_week(week: int) -> None:
+    url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week={week}"
+    response = requests.get(url)
+    data = response.json()
+    score_records = []
+    for game in data['events']:
+        game_state = game['status']['type']['state']
+        if game_state != 'post':
+            # Only process completed games
+            continue
+        print(f"Processing game: {game['shortName']}")
+        team_abbrevs = extract_team_abbrev(game['shortName'])
+        home_team_abbrev = team_abbrevs[1]
+        if home_team_abbrev == 'LAR':
+            home_team_abbrev = 'LA'
+        away_team_abbrev = team_abbrevs[0]
+        if away_team_abbrev == 'LAR':
+            away_team_abbrev = 'LA'
+        game_date = game['date']
+        home_score = game['competitions'][0]['competitors'][0]['score']
+        away_score = game['competitions'][0]['competitors'][1]['score']
+        print(f"Home team: {home_team_abbrev} {home_score}, Away team: {away_team_abbrev} {away_score}")
+        score_record = {
+            "home_team_abbrev": home_team_abbrev,
+            "away_team_abbrev": away_team_abbrev,
+            "game_date": game_date,
+            "home_score": home_score,
+            "away_score": away_score
+        }
+        score_records.append(score_record)
+    score_df = pd.DataFrame(score_records)
+    score_df.sort_values(by='game_date', inplace=True)
+    score_df.reset_index(drop=True, inplace=True)
+    with open(f'scores_{week}.txt', 'w') as scores_file:
+        for __, row in score_df.iterrows():
+            home_team_abbrev = row['home_team_abbrev']
+            away_team_abbrev = row['away_team_abbrev']
+            home_score = int(row['home_score'])
+            away_score = int(row['away_score'])
+            if home_score > away_score:
+                score_diff = home_score - away_score
+                scores_file.write(f"{home_team_abbrev} wins by {score_diff}\n")
+            elif home_score < away_score:
+                score_diff = away_score - home_score
+                scores_file.write(f"{away_team_abbrev} wins by {score_diff}\n")
+            else:
+                scores_file.write(f"{home_team_abbrev} and {away_team_abbrev} tie\n")
+    print(f"Scores for week {week} have been written to 'test_scores.txt'.")
+
+def run_weekly_predictions(week: int, num_simulations=3000, num_workers=None):
     prediction_run_start = time()
-    matchups = read_matchup_column("input.txt")
+    matchups = read_matchup_column(f"input_week_{week}.txt")
     game_models = [
         PrototypeGameModel(), initialize_new_game_model_instance("v1"), 
-        initialize_new_game_model_instance("v1a"), initialize_new_game_model_instance("v1b")
+        initialize_new_game_model_instance("v1a"), initialize_new_game_model_instance("v1b"),
+        initialize_new_game_model_instance("v2"), initialize_new_game_model_instance("v2a"),
+        initialize_new_game_model_instance("v2b")
     ]
     prediction_results = {key: [] for key in matchups}
     for game_model in game_models:
@@ -101,11 +194,18 @@ def run_weekly_predictions(num_simulations=3000, num_workers=None):
             prediction_results[matchup].append(matchup[1] + " WP%: " + str(result["home_win_pct"]))
 
     with open("weekly_predictions_enhanced.csv", "w", newline='') as output_file:
-        writer = csv.DictWriter(output_file, fieldnames=["Matchup", "Prototype", "Prototype_WP", "V1", "V1_WP", "V1a", "V1a_WP", "V1b", "V1b_WP"])
+        csv_fieldnames = ["Matchup", "Prototype", "Prototype_WP", "V1", "V1_WP", "V1a", "V1a_WP", "V1b", "V1b_WP", "V2", "V2_WP", "V2a", "V2a_WP", "V2b", "V2b_WP"]
+        writer = csv.DictWriter(output_file, fieldnames=csv_fieldnames)
         writer.writeheader()
         for matchup in matchups:
             writer.writerow({
                 "Matchup": f"{matchup[0]} v {matchup[1]}",
+                "V2b_WP": prediction_results[matchup][13],
+                "V2b": prediction_results[matchup][12],
+                "V2a_WP": prediction_results[matchup][11],
+                "V2a": prediction_results[matchup][10],
+                "V2_WP": prediction_results[matchup][9],
+                "V2": prediction_results[matchup][8],
                 "V1b_WP": prediction_results[matchup][7],
                 "V1b": prediction_results[matchup][6],
                 "V1a_WP": prediction_results[matchup][5],
@@ -117,11 +217,14 @@ def run_weekly_predictions(num_simulations=3000, num_workers=None):
             })
 
     with open("weekly_predictions.csv", "w", newline='') as output_file:
-        writer = csv.DictWriter(output_file, fieldnames=["Matchup", "Prototype", "V1", "V1a", "V1b"])
+        writer = csv.DictWriter(output_file, fieldnames=["Matchup", "Prototype", "V1", "V1a", "V1b", "V2", "V2a", "V2b"])
         writer.writeheader()
         for matchup in matchups:
             writer.writerow({
                 "Matchup": f"{matchup[0]} v {matchup[1]}",
+                "V2b": prediction_results[matchup][12],
+                "V2a": prediction_results[matchup][10],
+                "V2": prediction_results[matchup][8],
                 "V1b": prediction_results[matchup][6],
                 "V1a": prediction_results[matchup][4],
                 "V1": prediction_results[matchup][2],
@@ -129,7 +232,7 @@ def run_weekly_predictions(num_simulations=3000, num_workers=None):
             })
     prediction_run_end = time()
     prediction_run_time = prediction_run_end - prediction_run_start
-
+    print(f"Prediction run time: {prediction_run_time} seconds.")
     print("Weekly predictions have been written to 'weekly_predictions.csv'.")
 
 def generate_simulation_stats_summary(home_team: Team, away_team: Team, home_wins: int, 
@@ -220,7 +323,7 @@ def run_multiple_simulations_with_statistics(home_team_abbrev: str, away_team_ab
 
     home_wins = 0
     i = 0
-    print(f"Running {num_simulations} simulations of {home_team.name} vs. {away_team.name}.")
+    print(f"Running {num_simulations} simulations of {away_team.name} at {home_team.name}.")
 
     home_team_stats_df_list= []
     away_team_stats_df_list = []
@@ -249,7 +352,7 @@ def run_simulation_chunk(home_team: Team, away_team: Team, game_model: AbstractG
 
 def run_multiple_simulations_multi_threaded(home_team_abbrev: str, away_team_abbrev: str, num_simulations: int, game_model=PrototypeGameModel(), num_workers=None, debug_mode=True) -> dict:
     home_team, away_team = initialize_teams_for_game_engine(home_team_abbrev, away_team_abbrev)
-    print(f"Running {num_simulations} simulations of {home_team.name} vs. {away_team.name}.")
+    print(f"Running {num_simulations} simulations of {away_team.name} at {home_team.name}.")
 
     ## The default number of workers is half the number of CPU cores
     number_of_workers = min(num_simulations, os.cpu_count() // 2)
@@ -314,9 +417,9 @@ def run_multiple_simulations_multi_threaded(home_team_abbrev: str, away_team_abb
     return sim_result
 
 if __name__ == "__main__":
-    home_team = "NYJ"
-    away_team = "SEA"
-    num_simulations = 1000
+    home_team = "IND"
+    away_team = "ATL"
+    num_simulations = 150
     ## ADD SIMULATION INVOCATION BELOW ##
     # single_simulation_result = run_single_simulation(home_team, away_team)
     # print(single_simulation_result)
@@ -343,6 +446,10 @@ if __name__ == "__main__":
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     exec_start = time()
-    run_weekly_predictions(num_simulations=3500, num_workers=3)
+    # fetch_scores_for_week(11)
+    generate_weekly_prediction_input_file(12)
+    run_weekly_predictions(week=12, num_simulations=4500, num_workers=4)
+    #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2b"), num_workers=3)
+    #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2"), num_workers=3)
     exec_end = time()
     print(f"\nExecution time: {exec_end - exec_start} seconds.")

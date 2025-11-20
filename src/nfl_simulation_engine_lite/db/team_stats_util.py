@@ -161,3 +161,19 @@ def get_def_rush_yards_per_play_distribution_params(team: str, team_df: pd.DataF
     rush_df = team_df[(team_df["defteam"] == team) & (team_df["rush_attempt"] == 1)]
     rush_yards = rush_df["rushing_yards"].dropna()
     return get_distribution(rush_yards, "lognorm")
+
+def get_scramble_rate(team: str, team_df: pd.DataFrame) -> float:
+    scramble_df = team_df[(team_df["posteam"] == team) & (team_df["qb_scramble"] == 1)]
+    total_scramble_attempts = scramble_df["qb_scramble"].sum()
+    pass_df = team_df[(team_df["posteam"] == team) & (team_df["pass_attempt"] == 1)]
+    total_pass_attempts = pass_df["pass_attempt"].sum()
+    scramble_rate = round(total_scramble_attempts / (total_pass_attempts + total_scramble_attempts), 2)
+    return scramble_rate
+
+def get_scramble_rate_allowed(team: str, team_df: pd.DataFrame) -> float:
+    scramble_df = team_df[(team_df["defteam"] == team) & (team_df["qb_scramble"] == 1)]
+    total_scramble_attempts = scramble_df["qb_scramble"].sum()
+    pass_df = team_df[(team_df["defteam"] == team) & (team_df["pass_attempt"] == 1)]
+    total_pass_attempts = pass_df["pass_attempt"].sum()
+    scramble_rate = round(total_scramble_attempts / (total_pass_attempts + total_scramble_attempts), 2)
+    return scramble_rate

@@ -1,14 +1,15 @@
-Matchup,Prototype,V1,V1a,V1b
-MIN v LAC,LAC wins by 1.6,LAC wins by 0.22,LAC wins by 0.5,LAC wins by 0.22
-MIA v ATL,MIA wins by 3.25,MIA wins by 2.13,MIA wins by 2.37,MIA wins by 2.11
-NYJ v CIN,CIN wins by 3.86,CIN wins by 2.11,CIN wins by 2.33,CIN wins by 1.85
-CLE v NE,NE wins by 3.34,NE wins by 2.76,NE wins by 2.76,NE wins by 2.57
-NYG v PHI,PHI wins by 10.2,PHI wins by 8.16,PHI wins by 8.29,PHI wins by 5.69
-BUF v CAR,BUF wins by 16.21,BUF wins by 10.48,BUF wins by 10.67,BUF wins by 11.92
-CHI v BAL,BAL wins by 12.75,BAL wins by 11.45,BAL wins by 12.58,BAL wins by 10.06
-SF v HOU,HOU wins by 3.14,SF wins by 1.12,SF wins by 1.18,HOU wins by 0.42
-TB v NO,TB wins by 3.27,TB wins by 3.76,TB wins by 4.42,TB wins by 3.9
-DAL v DEN,DEN wins by 7.62,DEN wins by 5.49,DEN wins by 6.14,DEN wins by 8.22
-TEN v IND,IND wins by 1.57,IND wins by 1.13,IND wins by 1.32,IND wins by 1.64
-GB v PIT,GB wins by 2.81,GB wins by 4.52,GB wins by 4.83,GB wins by 4.54
-WAS v KC,WAS wins by 1.23,WAS wins by 3.47,WAS wins by 3.69,WAS wins by 6.68
+Matchup,Prototype,V1,V1a,V1b,V2,V2a,V2b
+BUF v HOU,HOU wins by 1.18,BUF wins by 0.74,BUF wins by 0.4,BUF wins by 0.36,HOU wins by 4.11,HOU wins by 2.45,HOU wins by 4.21
+PIT v CHI,CHI wins by 0.82,CHI wins by 0.33,CHI wins by 0.33,PIT wins by 1.59,CHI wins by 4.07,CHI wins by 2.9,CHI wins by 2.75
+NE v CIN,NE wins by 9.2,NE wins by 6.84,NE wins by 7.27,NE wins by 6.33,NE wins by 2.86,NE wins by 2.84,NE wins by 0.67
+NYG v DET,DET wins by 17.4,DET wins by 8.96,DET wins by 9.29,DET wins by 9.08,DET wins by 1.96,DET wins by 2.18,DET wins by 2.29
+MIN v GB,GB wins by 7.41,GB wins by 5.34,GB wins by 5.45,GB wins by 4.87,MIN wins by 7.06,GB wins by 0.52,MIN wins by 1.46
+SEA v TEN,SEA wins by 10.12,SEA wins by 10.22,SEA wins by 10.4,SEA wins by 8.27,SEA wins by 2.43,TEN wins by 2.11,TEN wins by 3.42
+IND v KC,IND wins by 4.11,IND wins by 3.36,IND wins by 3.8,IND wins by 3.11,KC wins by 1.07,KC wins by 1.9,KC wins by 2.45
+NYJ v BAL,BAL wins by 8.46,BAL wins by 4.92,BAL wins by 5.22,BAL wins by 5.66,BAL wins by 0.11,NYJ wins by 1.17,NYJ wins by 1.53
+CLE v LV,CLE wins by 2.01,CLE wins by 0.02,CLE wins by 0.27,CLE wins by 0.32,CLE wins by 0.55,CLE wins by 1.59,CLE wins by 2.71
+JAX v ARI,JAX wins by 3.28,JAX wins by 1.5,JAX wins by 1.54,JAX wins by 0.96,ARI wins by 1.96,JAX wins by 2.62,JAX wins by 1.75
+PHI v DAL,PHI wins by 4.48,PHI wins by 9.63,PHI wins by 11.13,PHI wins by 10.64,PHI wins by 1.49,PHI wins by 2.13,PHI wins by 1.77
+ATL v NO,ATL wins by 3.81,ATL wins by 3.32,ATL wins by 3.36,ATL wins by 3.31,ATL wins by 2.79,ATL wins by 3.49,ATL wins by 2.91
+TB v LA,LA wins by 3.05,LA wins by 2.6,LA wins by 2.88,LA wins by 1.95,LA wins by 5.81,LA wins by 3.64,LA wins by 2.48
+CAR v SF,SF wins by 2.98,SF wins by 3.81,SF wins by 3.81,SF wins by 6.97,SF wins by 10.65,SF wins by 0.53,SF wins by 0.59

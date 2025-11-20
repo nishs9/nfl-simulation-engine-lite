@@ -1,11 +1,15 @@
 from scipy.stats import lognorm
-import nfl_simulation_engine_lite.team.team_stats as TeamStats
+from nfl_simulation_engine_lite.team.team_stats import TeamStats
+from nfl_simulation_engine_lite.team.team_rates import TeamRates
 import numpy as np
+import pandas as pd
 
 class Team:
-    def __init__(self, name: str, stats: TeamStats):
+    def __init__(self, name: str, stats: TeamStats, team_rates: TeamRates, rpi_data: dict = None):
         self.name = name
         self.stats = stats
+        self.team_rates = team_rates
+        self.rpi_data = rpi_data
         self.off_passing_distribution = None
         self.def_passing_distribution = None
         self.off_rushing_distribution = None
@@ -14,9 +18,9 @@ class Team:
         self.def_air_yards_allowed_distribution = None
 
     def setup_stat_distributions(self, game_model_str: str) -> None:
-        if game_model_str == "proto":
+        if game_model_str == "proto" or game_model_str == "v2" or game_model_str == "v2a":
             pass
-        elif game_model_str == "v1" or game_model_str == "v1a":
+        elif game_model_str == "v1" or game_model_str == "v1a" or game_model_str == "v2b":
             self.off_passing_distribution = self.init_distribution(self.stats.off_pass_yards_per_play_mean, self.stats.off_pass_yards_per_play_variance)
             self.def_passing_distribution = self.init_distribution(self.stats.def_pass_yards_per_play_mean, self.stats.def_pass_yards_per_play_variance)
 
@@ -69,3 +73,15 @@ class Team:
     
     def set_stats(self, stats: TeamStats) -> None:
         self.stats = stats
+
+    def get_rpi_data(self) -> dict:
+        return self.rpi_data
+
+    def set_rpi_data(self, rpi_data: dict) -> None:
+        self.rpi_data = rpi_data
+
+    def get_team_rates(self) -> TeamRates:
+        return self.team_rates
+
+    def set_team_rates(self, team_rates: TeamRates) -> None:
+        self.team_rates = team_rates

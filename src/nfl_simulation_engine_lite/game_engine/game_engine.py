@@ -6,13 +6,19 @@ class GameEngine:
     def __init__(self, home_team: Team, away_team: Team, game_model=PrototypeGameModel()):
         self.home_team = home_team
         self.away_team = away_team
-        self.game_state = self.initialize_game_state()
-        self.initialize_game_state()
+        
+        game_model.set_home_team(home_team)
+        game_model.set_away_team(away_team)
         self.game_model = game_model
         home_team.setup_stat_distributions(game_model.get_model_code())
         away_team.setup_stat_distributions(game_model.get_model_code())
+        
+        self.game_state = self.initialize_game_state()
 
     def initialize_game_state(self) -> dict:
+        if (self.game_model.get_model_code().startswith("v2")):
+            self.game_model.init_team_strength_data(rpi_enabled=True)
+
         return {
             "quarter": 1,
             "game_seconds_remaining": 3600,

@@ -10,6 +10,8 @@ class TeamStats:
     yards_per_completion: float = 0
     pass_completion_rate_allowed: float = 0
     yards_allowed_per_completion: float = 0
+    scramble_rate: float = 0
+    scramble_rate_allowed: float = 0
 
     run_rate: float = 0
     rush_yards_per_carry: float = 0

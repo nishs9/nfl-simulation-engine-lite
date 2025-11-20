@@ -174,7 +174,12 @@ data/*.csv
 input/*.csv
 src/simulation_logs/*.csv
 src/nfl_simulation_engine_lite/logs/*.csv
+src/nfl_simulation_engine_lite/db/input/*.csv
 
 .env
 
 cursor/
+
+*bak*.db
+
+implementation_details.md
