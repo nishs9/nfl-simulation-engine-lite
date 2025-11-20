@@ -118,7 +118,7 @@ def generate_weekly_prediction_input_file(week: int) -> None:
     game_df.sort_values(by='game_date', inplace=True)
     game_df.reset_index(drop=True, inplace=True)
 
-    with open('input.txt', 'w') as input_file:
+    with open(f'input_week_{week}.txt', 'w') as input_file:
         for __, row in game_df.iterrows():
             home_team_abbrev = row['home_team_abbrev']
             away_team_abbrev = row['away_team_abbrev']
@@ -174,13 +174,14 @@ def fetch_scores_for_week(week: int) -> None:
                 scores_file.write(f"{home_team_abbrev} and {away_team_abbrev} tie\n")
     print(f"Scores for week {week} have been written to 'test_scores.txt'.")
 
-def run_weekly_predictions(num_simulations=3000, num_workers=None):
+def run_weekly_predictions(week: int, num_simulations=3000, num_workers=None):
     prediction_run_start = time()
-    matchups = read_matchup_column("input.txt")
+    matchups = read_matchup_column(f"input_week_{week}.txt")
     game_models = [
         PrototypeGameModel(), initialize_new_game_model_instance("v1"), 
         initialize_new_game_model_instance("v1a"), initialize_new_game_model_instance("v1b"),
-        initialize_new_game_model_instance("v2"), initialize_new_game_model_instance("v2a")
+        initialize_new_game_model_instance("v2"), initialize_new_game_model_instance("v2a"),
+        initialize_new_game_model_instance("v2b")
     ]
     prediction_results = {key: [] for key in matchups}
     for game_model in game_models:
@@ -193,11 +194,14 @@ def run_weekly_predictions(num_simulations=3000, num_workers=None):
             prediction_results[matchup].append(matchup[1] + " WP%: " + str(result["home_win_pct"]))
 
     with open("weekly_predictions_enhanced.csv", "w", newline='') as output_file:
-        writer = csv.DictWriter(output_file, fieldnames=["Matchup", "Prototype", "Prototype_WP", "V1", "V1_WP", "V1a", "V1a_WP", "V1b", "V1b_WP", "V2", "V2_WP", "V2a", "V2a_WP"])
+        csv_fieldnames = ["Matchup", "Prototype", "Prototype_WP", "V1", "V1_WP", "V1a", "V1a_WP", "V1b", "V1b_WP", "V2", "V2_WP", "V2a", "V2a_WP", "V2b", "V2b_WP"]
+        writer = csv.DictWriter(output_file, fieldnames=csv_fieldnames)
         writer.writeheader()
         for matchup in matchups:
             writer.writerow({
                 "Matchup": f"{matchup[0]} v {matchup[1]}",
+                "V2b_WP": prediction_results[matchup][13],
+                "V2b": prediction_results[matchup][12],
                 "V2a_WP": prediction_results[matchup][11],
                 "V2a": prediction_results[matchup][10],
                 "V2_WP": prediction_results[matchup][9],
@@ -213,11 +217,12 @@ def run_weekly_predictions(num_simulations=3000, num_workers=None):
             })
 
     with open("weekly_predictions.csv", "w", newline='') as output_file:
-        writer = csv.DictWriter(output_file, fieldnames=["Matchup", "Prototype", "V1", "V1a", "V1b", "V2", "V2a"])
+        writer = csv.DictWriter(output_file, fieldnames=["Matchup", "Prototype", "V1", "V1a", "V1b", "V2", "V2a", "V2b"])
         writer.writeheader()
         for matchup in matchups:
             writer.writerow({
                 "Matchup": f"{matchup[0]} v {matchup[1]}",
+                "V2b": prediction_results[matchup][12],
                 "V2a": prediction_results[matchup][10],
                 "V2": prediction_results[matchup][8],
                 "V1b": prediction_results[matchup][6],
@@ -227,7 +232,7 @@ def run_weekly_predictions(num_simulations=3000, num_workers=None):
             })
     prediction_run_end = time()
     prediction_run_time = prediction_run_end - prediction_run_start
-
+    print(f"Prediction run time: {prediction_run_time} seconds.")
     print("Weekly predictions have been written to 'weekly_predictions.csv'.")
 
 def generate_simulation_stats_summary(home_team: Team, away_team: Team, home_wins: int, 
@@ -318,7 +323,7 @@ def run_multiple_simulations_with_statistics(home_team_abbrev: str, away_team_ab
 
     home_wins = 0
     i = 0
-    print(f"Running {num_simulations} simulations of {home_team.name} vs. {away_team.name}.")
+    print(f"Running {num_simulations} simulations of {away_team.name} at {home_team.name}.")
 
     home_team_stats_df_list= []
     away_team_stats_df_list = []
@@ -347,7 +352,7 @@ def run_simulation_chunk(home_team: Team, away_team: Team, game_model: AbstractG
 
 def run_multiple_simulations_multi_threaded(home_team_abbrev: str, away_team_abbrev: str, num_simulations: int, game_model=PrototypeGameModel(), num_workers=None, debug_mode=True) -> dict:
     home_team, away_team = initialize_teams_for_game_engine(home_team_abbrev, away_team_abbrev)
-    print(f"Running {num_simulations} simulations of {home_team.name} vs. {away_team.name}.")
+    print(f"Running {num_simulations} simulations of {away_team.name} at {home_team.name}.")
 
     ## The default number of workers is half the number of CPU cores
     number_of_workers = min(num_simulations, os.cpu_count() // 2)
@@ -441,10 +446,10 @@ if __name__ == "__main__":
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     exec_start = time()
-    fetch_scores_for_week(11)
+    # fetch_scores_for_week(11)
     generate_weekly_prediction_input_file(12)
-    #run_weekly_predictions(num_simulations=4000, num_workers=5)
-    #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2a"), num_workers=3)
+    run_weekly_predictions(week=12, num_simulations=4500, num_workers=4)
+    #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2b"), num_workers=3)
     #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2"), num_workers=3)
     exec_end = time()
     print(f"\nExecution time: {exec_end - exec_start} seconds.")

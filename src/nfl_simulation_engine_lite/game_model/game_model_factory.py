@@ -5,6 +5,7 @@ from nfl_simulation_engine_lite.game_model.game_model_v1a import GameModel_V1a
 from nfl_simulation_engine_lite.game_model.game_model_v1b import GameModel_V1b
 from nfl_simulation_engine_lite.game_model.game_model_v2 import GameModel_V2
 from nfl_simulation_engine_lite.game_model.game_model_v2a import GameModel_V2a
+from nfl_simulation_engine_lite.game_model.game_model_v2b import GameModel_V2b
 
 def initialize_new_game_model_instance(model_code:str) -> AbstractGameModel:
     if model_code == "v1":
@@ -17,5 +18,7 @@ def initialize_new_game_model_instance(model_code:str) -> AbstractGameModel:
         return GameModel_V2()
     elif model_code == "v2a":
         return GameModel_V2a()
+    elif model_code == "v2b":
+        return GameModel_V2b()
     else:
         return PrototypeGameModel()
