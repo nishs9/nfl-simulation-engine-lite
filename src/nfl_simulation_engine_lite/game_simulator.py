@@ -92,6 +92,13 @@ def extract_team_abbrev(team_string):
         print("The following game string is in an invalid format:")
         print(team_string)
 
+def map_team_abbrev(team_abbrev: str) -> str:
+    if team_abbrev == 'LAR':
+        return 'LA'
+    if team_abbrev == "WSH":
+        return "WAS"
+    return team_abbrev
+
 def generate_weekly_prediction_input_file(week: int) -> None:
     url = f"https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?week={week}"
     response = requests.get(url)
@@ -100,12 +107,8 @@ def generate_weekly_prediction_input_file(week: int) -> None:
     for game in data['events']:
         print(f"Processing game: {game['shortName']}")
         team_abbrevs = extract_team_abbrev(game['shortName'])
-        home_team_abbrev = team_abbrevs[1]
-        if home_team_abbrev == 'LAR':
-            home_team_abbrev = 'LA'
-        away_team_abbrev = team_abbrevs[0]
-        if away_team_abbrev == 'LAR':
-            away_team_abbrev = 'LA'
+        home_team_abbrev = map_team_abbrev(team_abbrevs[1])
+        away_team_abbrev = map_team_abbrev(team_abbrevs[0])
         game_date = game['date']
         matchup_record = {
             "home_team_abbrev": home_team_abbrev,
@@ -449,8 +452,8 @@ if __name__ == "__main__":
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     exec_start = time()
     #fetch_scores_for_week(12)
-    generate_weekly_prediction_input_file(12)
-    run_weekly_predictions(week=13, num_simulations=4500, num_workers=4)
+    generate_weekly_prediction_input_file(13)
+    run_weekly_predictions(week=13, num_simulations=5000, num_workers=5)
     #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2b"), num_workers=3)
     #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2"), num_workers=3)
     exec_end = time()
