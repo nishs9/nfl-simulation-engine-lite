@@ -57,17 +57,17 @@ def hydrate_situational_db(pbp_df: pd.DataFrame, season: int) -> None:
     team_rates_df.to_sql(f"team_rates_{season}", db_conn, if_exists='replace', index=True)
     db_conn.close()
 
-def hydrate_rpi_db(season: int) -> None:
+def hydrate_rpi_db(season: int, max_week: int) -> None:
     base_url = 'https://github.com/nflverse/nflverse-data/releases/download/schedules/games.csv.gz'
     db_conn = sqlite3.connect("nfl_stats.db")
     schedule_df = pd.read_csv(base_url, compression='gzip', low_memory=False)
     # Filter out games that haven't happened yet
     filtered_sched_df = schedule_df[(schedule_df["season"] == season) & ~(schedule_df['home_score'].isna())]
-    rpi_df = rpi_util.compute_rpi_from_schedule(filtered_sched_df)
+    rpi_df = rpi_util.compute_rpi_from_schedule(filtered_sched_df, max_week)
     rpi_df.to_sql(f"rpi_data_{season}", db_conn, if_exists='replace', index=True)
     db_conn.close()
 
-def alt_online_db_hydrate() -> None:
+def alt_online_db_hydrate(max_week: int) -> None:
     #base_url_1 = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2024.csv.gz'
     base_url_2 = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_2025.csv.gz'
     #raw_pbp_data_1 = pd.read_csv(base_url_1, compression='gzip', low_memory=False)
@@ -77,7 +77,7 @@ def alt_online_db_hydrate() -> None:
     regular_season_data = raw_pbp_data_2[raw_pbp_data_2["season_type"] == "REG"]
     hydrate_standard_db(regular_season_data, 2025, False, False)
     hydrate_situational_db(regular_season_data, 2025)
-    hydrate_rpi_db(2025)
+    hydrate_rpi_db(2025, max_week)
 
 def hydrate_db_online(season: int, save_raw_data: bool, filter_data: bool) -> None:
     base_url = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_' + str(season) + '.csv.gz'
@@ -235,4 +235,4 @@ if __name__ == "__main__":
         hydrate_db_local(2024, args.save_raw_pbp, args.filter_pbp)
     else:
         print("Running online DB hydration flow")
-        alt_online_db_hydrate()
+        alt_online_db_hydrate(12)

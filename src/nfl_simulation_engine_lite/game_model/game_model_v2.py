@@ -26,8 +26,8 @@ class GameModel_V2(AbstractGameModel):
 
     def init_team_strength_data(self, rpi_enabled: bool) -> dict:
         if rpi_enabled:
-            home_z_score = self.get_home_team().get_rpi_data()["rpi_z_score"]
-            away_z_score = self.get_away_team().get_rpi_data()["rpi_z_score"]
+            home_z_score = self.get_home_team().get_rpi_data()["comp_rpi_z_score"]
+            away_z_score = self.get_away_team().get_rpi_data()["comp_rpi_z_score"]
             z_diff = home_z_score - away_z_score + self.rpi_params["hfa_const"]
             home_multiplier = np.clip(exp(self.rpi_params["gamma"] * z_diff), self.rpi_params["multiplier_floor"], self.rpi_params["multiplier_ceiling"])
             away_multipler = np.clip(exp(-1 * self.rpi_params["gamma"] * z_diff), self.rpi_params["multiplier_floor"], self.rpi_params["multiplier_ceiling"])
