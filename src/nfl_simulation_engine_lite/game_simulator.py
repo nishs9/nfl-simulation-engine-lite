@@ -146,13 +146,15 @@ def fetch_scores_for_week(week: int) -> None:
         game_date = game['date']
         home_score = game['competitions'][0]['competitors'][0]['score']
         away_score = game['competitions'][0]['competitors'][1]['score']
+        game_date = game['date']
         print(f"Home team: {home_team_abbrev} {home_score}, Away team: {away_team_abbrev} {away_score}")
         score_record = {
             "home_team_abbrev": home_team_abbrev,
             "away_team_abbrev": away_team_abbrev,
             "game_date": game_date,
             "home_score": home_score,
-            "away_score": away_score
+            "away_score": away_score,
+            "game_date": game_date
         }
         score_records.append(score_record)
     score_df = pd.DataFrame(score_records)
@@ -446,9 +448,9 @@ if __name__ == "__main__":
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     exec_start = time()
-    # fetch_scores_for_week(11)
-    generate_weekly_prediction_input_file(12)
-    run_weekly_predictions(week=12, num_simulations=4500, num_workers=4)
+    fetch_scores_for_week(12)
+    # generate_weekly_prediction_input_file(12)
+    # run_weekly_predictions(week=12, num_simulations=4500, num_workers=4)
     #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2b"), num_workers=3)
     #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2"), num_workers=3)
     exec_end = time()
