@@ -17,17 +17,17 @@ def init_argparser() -> argparse.Namespace:
     parsed_args = parser.parse_args()
     return parsed_args
 
-def hydrate_standard_db(pbp_df: pd.DataFrame, season: int, save_raw_data: bool, filter_data: bool) -> None:
+def hydrate_standard_db(pbp_df: pd.DataFrame, season: int, save_raw_data: bool, save_filter_data: bool) -> None:
     db_conn = sqlite3.connect("nfl_stats.db")
 
     # Filter the play-by-play data to only include necessary columns
     filtered_pbp_data = pbp_df[pbp_filter_list]
 
     # Optionally, save the raw play-by-play data to a CSV file
-    if (save_raw_data and not filter_data):
+    if (save_raw_data and not save_filter_data):
         raw_output_file = f"data/{season}_NFL_raw.csv"
         pbp_df.to_csv(raw_output_file, index=False)
-    elif (filter_data):
+    elif (save_filter_data):
         filtered_output_file = f"data/{season}_NFL_filtered.csv"
         filtered_pbp_data.to_csv(filtered_output_file, index=False)
 
@@ -235,4 +235,4 @@ if __name__ == "__main__":
         hydrate_db_local(2024, args.save_raw_pbp, args.filter_pbp)
     else:
         print("Running online DB hydration flow")
-        alt_online_db_hydrate(12)
+        alt_online_db_hydrate(16)

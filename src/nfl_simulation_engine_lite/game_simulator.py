@@ -143,9 +143,13 @@ def fetch_scores_for_week(week: int) -> None:
         home_team_abbrev = team_abbrevs[1]
         if home_team_abbrev == 'LAR':
             home_team_abbrev = 'LA'
+        if home_team_abbrev == 'WSH':
+            home_team_abbrev = 'WAS'
         away_team_abbrev = team_abbrevs[0]
         if away_team_abbrev == 'LAR':
             away_team_abbrev = 'LA'
+        if away_team_abbrev == 'WSH':
+            away_team_abbrev = 'WAS'
         game_date = game['date']
         home_score = game['competitions'][0]['competitors'][0]['score']
         away_score = game['competitions'][0]['competitors'][1]['score']
@@ -451,9 +455,9 @@ if __name__ == "__main__":
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     # run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v1b"), num_workers=3)
     exec_start = time()
-    #fetch_scores_for_week(12)
-    generate_weekly_prediction_input_file(13)
-    run_weekly_predictions(week=13, num_simulations=5000, num_workers=5)
+    #fetch_scores_for_week(16)
+    #generate_weekly_prediction_input_file(17)
+    run_weekly_predictions(week=17, num_simulations=6000, num_workers=3)
     #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2b"), num_workers=3)
     #run_multiple_simulations_multi_threaded(home_team, away_team, num_simulations, game_model=initialize_new_game_model_instance("v2"), num_workers=3)
     exec_end = time()
