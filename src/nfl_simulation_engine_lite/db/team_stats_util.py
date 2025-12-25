@@ -77,20 +77,18 @@ def get_rush_yards_allowed_per_carry(team: str, team_df: pd.DataFrame) -> float:
     return yards_allowed_per_carry
 
 def get_turnover_rate(team: str, team_df: pd.DataFrame) -> float:
-    num_drives = team_df["game_drive_composite_id"].unique().size
-    turnover_df = team_df[(team_df["posteam"] == team) & ((team_df["interception"] == 1) | (team_df["fumble_lost"] == 1))]
-    total_turnovers = turnover_df["interception"].sum() + turnover_df["fumble_lost"].sum()
-    turnovers_per_drive = total_turnovers / num_drives
-    turnovers_per_drive = round(turnovers_per_drive, 2)
-    return turnovers_per_drive
+    filtered_team_df = team_df[(team_df["posteam"] == team) & (team_df["play_type"].isin(["run", "pass"]))]
+    total_turnovers = filtered_team_df["interception"].sum() + filtered_team_df["fumble_lost"].sum()
+    total_plays = filtered_team_df["play_type"].count()
+    turnover_rate = round(total_turnovers / total_plays, 2)
+    return turnover_rate
 
 def get_forced_turnover_rate(team: str, team_df: pd.DataFrame) -> float:
-    num_drives = team_df["game_drive_composite_id"].unique().size
-    forced_turnover_df = team_df[(team_df["defteam"] == team) & ((team_df["interception"] == 1) | (team_df["fumble_lost"] == 1))]
-    total_forced_turnovers = forced_turnover_df["interception"].sum() + forced_turnover_df["fumble_lost"].sum()
-    forced_turnovers_per_drive = total_forced_turnovers / num_drives
-    forced_turnovers_per_drive = round(forced_turnovers_per_drive, 2)
-    return forced_turnovers_per_drive
+    filtered_team_df = team_df[(team_df["defteam"] == team) & (team_df["play_type"].isin(["run", "pass"]))]
+    total_forced_turnovers = filtered_team_df["interception"].sum() + filtered_team_df["fumble_lost"].sum()
+    total_plays = filtered_team_df["play_type"].count()
+    forced_turnover_rate = round(total_forced_turnovers / total_plays, 2)
+    return forced_turnover_rate
 
 def get_run_and_pass_rates(team: str, team_df: pd.DataFrame) -> tuple[float, float]:
     team_df = team_df[(team_df["posteam"] == team)]

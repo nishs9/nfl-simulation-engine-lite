@@ -99,7 +99,7 @@ def compute_rpi_from_schedule(schedule_df: pd.DataFrame, max_week: int) -> pd.Da
         rpi = 0.25 * team_wp[team] + 0.50 * team_owp[team] + 0.25 * team_oowp[team]
         rpi_r = 0.25 * team_wp_r[team] + 0.50 * team_owp_r[team] + 0.25 * team_oowp_r[team]
         rpi_mov = 0.25 * team_wp_mov[team] + 0.50 * team_owp_mov[team] + 0.25 * team_oowp_mov[team]
-        comp_rpi = 0.35 * rpi + 0.15 * rpi_r + 0.50 * rpi_mov
+        comp_rpi = 0.38 * rpi + 0.05 * rpi_r + 0.57 * rpi_mov
         games_played = len(games_df[games_df['team'] == team])
         results.append({
             'team': team,
