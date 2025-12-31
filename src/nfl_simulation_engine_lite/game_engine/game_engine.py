@@ -62,7 +62,7 @@ class GameEngine:
                 self.game_state["down"] = 1
                 self.game_state["distance"] = 10
             elif (play_result["yards_gained"] < self.game_state["distance"] and self.game_state["down"] == 4): # Turnover on downs
-                self.switch_possession()
+                self.simulate_turnover()
             else:
                 self.game_state["down"] += 1
                 self.game_state["distance"] -= play_result["yards_gained"]
